@@ -195,7 +195,7 @@ export default function App() {
                   <div className="ml-11 text-[#5C5751] space-y-2 leading-relaxed">
                     <p>우측 상단의 <span className="font-bold text-[#E85D26]">API Key Required</span> 버튼을 클릭하여 본인의 API 키를 등록하세요.</p>
                     <ul className="list-disc ml-5 text-sm space-y-1">
-                      <li><strong>Gemini:</strong> gemini-1.5-flash 등 최신 모델 권장</li>
+                      <li><strong>Gemini:</strong> gemini-2.5-flash 최신 모델 사용</li>
                       <li><strong>OpenAI:</strong> gpt-4o 등 고성능 모델 사용 가능</li>
                       <li><strong>Anthropic:</strong> Claude 3.5 Sonnet 사용 가능</li>
                     </ul>
@@ -314,7 +314,7 @@ export default function App() {
                   onChange={(e) => {
                     const p = e.target.value as any;
                     setTempAIProvider(p);
-                    setTempAIModel(p === 'gemini' ? 'gemini-1.5-flash' : p === 'openai' ? 'gpt-4o' : 'claude-3-5-sonnet-20240620');
+                    setTempAIModel(p === 'gemini' ? 'gemini-2.5-flash' : p === 'openai' ? 'gpt-4o' : 'claude-3-5-sonnet-20240620');
                   }}
                   className="w-full bg-[#F8F7F5] border border-[#E5E3DF] p-2.5 rounded-xl text-sm font-bold outline-none"
                 >
