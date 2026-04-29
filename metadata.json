@@ -1,6 +1,6 @@
 {
-  "name": "Birkman 팀 시너지 분석 전문가",
-  "description": "Birkman Cloud V4 데이터를 기반으로 팀원 간의 성향을 분석하고 시너지 코칭 리포트를 생성하는 전문 도구입니다.",
+  "name": "Birkman 시너지 분석 전문가",
+  "description": "Birkman Cloud V4 데이터를 기반으로 팀원의 성향을 분석하고 시너지 코칭 리포트를 생성하는 전문 도구입니다.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }
