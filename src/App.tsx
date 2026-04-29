@@ -353,27 +353,34 @@ export default function App() {
                     </div>
                     
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                      {surveyor.name ? (
-                        <div className="w-full flex flex-col sm:flex-row items-center gap-6 p-8 bg-orange-50 border border-orange-100 rounded-[32px] shadow-sm">
-                          <div className="flex-1 space-y-2">
+                      {surveyor.name && Object.keys(answers).length > 0 ? (
+                        <div className="w-full flex flex-col sm:flex-row items-center gap-8 p-10 bg-orange-50 border-2 border-orange-200 rounded-[40px] shadow-xl shadow-orange-500/10 relative overflow-hidden group">
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-orange-200/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-orange-200/40 transition-all" />
+                          <div className="flex-1 space-y-3 relative z-10">
                             <div className="flex items-center gap-2 text-[#E85D26]">
-                              <Sparkles size={16} className="animate-pulse" />
-                              <span className="text-sm font-black uppercase tracking-tighter">Diagnostic in Progress</span>
+                              <Sparkles size={18} className="animate-pulse" />
+                              <span className="text-xs font-black uppercase tracking-widest">Ongoing Diagnostic Found</span>
                             </div>
-                            <p className="text-lg font-bold leading-tight">
-                              <span className="text-[#E85D26] underline decoration-2 underline-offset-4">{surveyor.name}</span>님, <br />
+                            <h3 className="text-2xl font-black leading-tight text-[#1A1714]">
+                              <span className="text-[#E85D26]">{surveyor.name}</span>님, <br />
                               진행 중인 성향 진단이 있습니다.
-                            </p>
-                            <p className="text-xs text-[#9C9590] font-medium">
-                              현재 {Object.keys(answers).length}개 문항 응답 완료됨
-                            </p>
+                            </h3>
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-1.5 px-3 py-1 bg-white rounded-full border border-orange-100 shadow-sm">
+                                <FileText size={12} className="text-[#E85D26]" />
+                                <span className="text-[10px] font-black text-[#5C5751]">{Object.keys(answers).length} / 250 문항 완료</span>
+                              </div>
+                              <div className="h-1 w-20 bg-orange-200 rounded-full overflow-hidden">
+                                <div className="h-full bg-[#E85D26]" style={{ width: `${(Object.keys(answers).length / 250) * 100}%` }} />
+                              </div>
+                            </div>
                           </div>
-                          <div className="flex flex-col gap-2 w-full sm:w-auto">
+                          <div className="flex flex-col gap-3 w-full sm:w-auto relative z-10">
                             <button 
                                onClick={resumeSurvey}
-                               className="px-10 py-4 bg-[#E85D26] text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 hover:bg-[#D44D1D] transition-all shadow-xl shadow-orange-500/20 active:scale-95"
+                               className="px-12 py-5 bg-[#E85D26] text-white rounded-3xl font-black text-base flex items-center justify-center gap-3 hover:bg-[#D44D1D] transition-all shadow-xl shadow-orange-500/30 active:scale-95"
                             >
-                              이어서 하기
+                              진단 이어서 하기
                             </button>
                             <button 
                                onClick={() => {
@@ -381,9 +388,9 @@ export default function App() {
                                    resetSurvey();
                                  }
                                }}
-                               className="px-6 py-3 bg-white border border-[#E5E3DF] text-[#9C9590] rounded-2xl font-bold text-xs hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all active:scale-95"
+                               className="px-6 py-3 text-[#9C9590] rounded-2xl font-bold text-xs hover:bg-white hover:text-red-500 transition-all active:scale-95 text-center"
                             >
-                              기존 기록 삭제 후 [새로 시작]
+                              기록 삭제 후 새로 시작
                             </button>
                           </div>
                         </div>

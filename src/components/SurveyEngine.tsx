@@ -46,13 +46,13 @@ export const SurveyEngine: React.FC = () => {
         </div>
         <button 
           onClick={() => {
-            if (confirm("진단을 잠시 멈출까요? 지금까지의 응답은 브라우저에 자동 저장되어 언제든지 이어서 진행할 수 있습니다.")) {
+            if (confirm("진단을 잠시 중단하시겠습니까? 지금까지의 답변은 안전하게 저장되며, 나중에 언제든지 이어서 진행할 수 있습니다.")) {
               pauseSurvey();
             }
           }}
-          className="text-[10px] font-black uppercase text-orange-400 hover:text-white border border-orange-500/30 px-4 py-1.5 rounded-xl transition-all bg-orange-500/5"
+          className="text-[10px] font-black uppercase text-orange-400 hover:text-white border border-orange-500/50 px-5 py-2 rounded-2xl transition-all bg-orange-500/10 backdrop-blur-sm"
         >
-          일시중지 및 저장
+          진단 일시중지 (자동 저장)
         </button>
       </div>
 
