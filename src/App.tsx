@@ -112,14 +112,22 @@ export default function App() {
     setIsGenerating(true);
     setError(null);
     try {
+      console.log(`Starting generation for ${member.name} using ${aiConfig.provider}/${aiConfig.model}`);
       const res = await callAIService(
         aiConfig.provider,
         aiConfig.apiKey,
         aiConfig.model,
         member
       );
+      
+      if (!res || res.length < 10) {
+        throw new Error("AI로부터 충분한 응답을 받지 못했습니다. 다시 시도해 주세요.");
+      }
+      
       setIndividualReport(member.id, res);
+      console.log(`Generation completed for ${member.name}`);
     } catch (err: any) {
+      console.error("Report Generation Failed:", err);
       setError(`${member.name} 멤버의 리포트 생성 중 오류가 발생했습니다: ${err.message}`);
     } finally {
       setIsGenerating(false);

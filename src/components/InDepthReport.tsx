@@ -276,7 +276,10 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({
                 components={{
                   h2: ({children}) => {
                     const text = String(children);
-                    if (text.includes("버크만 인사이트")) {
+                    // More robust detection for Birkman Insight header
+                    const isInsight = /버크만\s*인사이트|Birkman\s*Insight/i.test(text);
+                    
+                    if (isInsight) {
                       return (
                         <div className="mt-12 mb-8 border-b-2 border-[#1A1714] pb-6">
                            <div className="flex items-center justify-between mb-4">
@@ -298,8 +301,6 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({
                     return <h2 className="text-xl font-bold mt-12 mb-6 text-[#E85D26] tracking-tight bg-orange-50 inline-block px-4 py-1 rounded-lg">{children}</h2>;
                   },
                   li: ({children}) => {
-                    // Detect if we are inside the Birkman Insight strengths list
-                    // This is a bit of a heuristic but works for the structured prompt
                     return (
                       <div className="flex items-start gap-4 mb-2 group">
                         <div className="mt-1 w-5 h-5 rounded-full border-2 border-[#E5E3DF] flex-shrink-0 group-hover:border-[#E85D26] transition-colors" />

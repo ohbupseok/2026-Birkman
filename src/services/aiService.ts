@@ -51,20 +51,33 @@ ${scoresText}
   try {
     for (const section of sections) {
       const sectionPrompt = `
+당신은 버크만 성향 분석 전문가입니다. 다음 데이터를 바탕으로 리포트의 특정 섹션을 작성해 주세요.
+
+[분석 데이터]
 ${baseContext}
-${fullReport ? "지금까지 작성된 내용:\n" + fullReport.slice(-500) + "\n\n이어서 작성할 섹션:" : ""}
-반드시 다음 제목으로 섹션을 시작하십시오: ${section.title}
-상세 요청: ${section.prompt}
-서식: 마크다운 형식을 사용하고, 주요 키워드는 **굵게** 표시하세요. 절대 중간에 끊기지 않도록 해당 섹션을 완결성 있게 작성하세요.
+
+[작성할 섹션 정보]
+섹션 제목: ${section.title}
+섹션 상세 내용: ${section.prompt}
+
+[작성 가이드]
+- 마크다운(Markdown) 형식을 사용하세요.
+- 주요 키워드나 수치는 **굵게** 표시하세요.
+- 전문적이고 따뜻한 어조를 유지하세요.
+- 섹션 제목(${section.title})으로 시작하여 내용을 완결성 있게 작성하세요.
+- 절대 중간에 끊기지 않도록 분량을 적절히 조절하세요.
 `;
 
       const sectionContent = await callSingleAIStep(provider, apiKey, model, sectionPrompt);
-      fullReport += sectionContent + "\n\n";
+      if (!sectionContent || sectionContent.length < 5) {
+        throw new Error(`[${section.title}] 섹션 생성에 실패했습니다. API 할당량이나 연결 상태를 확인해 주세요.`);
+      }
+      fullReport += sectionContent.trim() + "\n\n";
     }
     return fullReport;
   } catch (err: any) {
     console.error("Sectioned Generation Error:", err);
-    throw err;
+    throw new Error(err.message || "리포트 생성 중 알 수 없는 오류가 발생했습니다.");
   }
 }
 
@@ -74,68 +87,65 @@ async function callSingleAIStep(
   model: string,
   prompt: string
 ): Promise<string> {
-  if (provider === "gemini") {
-    const normalizedModel = model.startsWith('models/') ? model.split('/')[1] : model;
-    const url = `https://generativelanguage.googleapis.com/v1/models/${normalizedModel}:generateContent?key=${apiKey}`;
+    if (provider === "gemini") {
+      const normalizedModel = model.startsWith('models/') ? model.split('/')[1] : model;
+      const url = `https://generativelanguage.googleapis.com/v1/models/${normalizedModel}:generateContent?key=${apiKey}`;
+      
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 2000, temperature: 0.7 },
+        })
+      });
+      
+      if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          const errorMessage = errorData.error?.message || `Gemini API Error: ${res.statusText}`;
+          
+          if (res.status === 404 || errorMessage.includes("not found")) {
+              const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/${normalizedModel}:generateContent?key=${apiKey}`;
+              const fallbackRes = await fetch(fallbackUrl, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                      contents: [{ parts: [{ text: prompt }] }],
+                      generationConfig: { maxOutputTokens: 2000 }
+                  })
+              });
+              if (fallbackRes.ok) {
+                  const fallbackData = await fallbackRes.json();
+                  return fallbackData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+              }
+          }
+          throw new Error(errorMessage);
+      }
+      const data = await res.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    } 
     
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 1500, temperature: 0.7 },
-        safetySettings: [
-          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-          { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-        ]
-      })
-    });
-    
-    if (!res.ok) {
-        const errorData = await res.json();
-        const errorMessage = errorData.error?.message || `Gemini API Error: ${res.statusText}`;
-        if (res.status === 404 || errorMessage.includes("not found")) {
-            const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/${normalizedModel}:generateContent?key=${apiKey}`;
-            const fallbackRes = await fetch(fallbackUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: { maxOutputTokens: 1500 }
-                })
-            });
-            if (fallbackRes.ok) {
-                const fallbackData = await fallbackRes.json();
-                return fallbackData.candidates?.[0]?.content?.parts?.[0]?.text || "";
-            }
-        }
-        throw new Error(errorMessage);
+    if (provider === "openai") {
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 2000
+        })
+      });
+      const data = await res.json();
+      if (data.error) {
+        throw new Error(data.error.message);
+      }
+      return data.choices?.[0]?.message?.content || "";
     }
-    const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-  } 
-  
-  if (provider === "openai") {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 1500
-      })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-    return data.choices[0].message.content;
-  }
 
-  throw new Error(`Unsupported provider: ${provider}`);
+  return "";
 }
 
 
