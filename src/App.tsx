@@ -354,31 +354,40 @@ export default function App() {
                     
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
                       {surveyor.name && Object.keys(answers).length > 0 ? (
-                        <div className="w-full flex flex-col sm:flex-row items-center gap-8 p-10 bg-orange-50 border-2 border-orange-200 rounded-[40px] shadow-xl shadow-orange-500/10 relative overflow-hidden group">
-                          <div className="absolute top-0 right-0 w-32 h-32 bg-orange-200/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-orange-200/40 transition-all" />
-                          <div className="flex-1 space-y-3 relative z-10">
+                        <div className="w-full flex flex-col sm:flex-row items-center gap-10 p-10 bg-orange-50 border border-orange-200 rounded-[40px] shadow-xl shadow-orange-500/5 relative overflow-hidden group">
+                          <div className="absolute top-0 right-0 w-48 h-48 bg-orange-200/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-[80px] group-hover:bg-orange-200/40 transition-all" />
+                          <div className="flex-1 space-y-5 relative z-10">
                             <div className="flex items-center gap-2 text-[#E85D26]">
                               <Sparkles size={18} className="animate-pulse" />
-                              <span className="text-xs font-black uppercase tracking-widest">Ongoing Diagnostic Found</span>
+                              <span className="text-xs font-black uppercase tracking-[0.2em]">Diagnostic Found</span>
                             </div>
-                            <h3 className="text-2xl font-black leading-tight text-[#1A1714]">
-                              <span className="text-[#E85D26]">{surveyor.name}</span>님, <br />
-                              진행 중인 성향 진단이 있습니다.
-                            </h3>
-                            <div className="flex items-center gap-4">
-                              <div className="flex items-center gap-1.5 px-3 py-1 bg-white rounded-full border border-orange-100 shadow-sm">
-                                <FileText size={12} className="text-[#E85D26]" />
-                                <span className="text-[10px] font-black text-[#5C5751]">{Object.keys(answers).length} / 250 문항 완료</span>
+                            <div className="space-y-1">
+                              <h3 className="text-2xl font-black leading-[1.3] text-[#1A1714]">
+                                <span className="text-[#E85D26] block">{surveyor.name}님,</span>
+                                진행 중인 성향 진단이 있습니다.
+                              </h3>
+                            </div>
+                            <div className="flex flex-col gap-3">
+                              <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-1.5 px-3 py-1 bg-white rounded-full border border-orange-100 shadow-sm">
+                                  <FileText size={12} className="text-[#E85D26]" />
+                                  <span className="text-[10px] font-black text-[#5C5751] uppercase tracking-tighter">{Object.keys(answers).length} / 250 Complete</span>
+                                </div>
+                                <span className="text-[10px] font-bold text-[#9C9590]">{Math.round((Object.keys(answers).length / 250) * 100)}% 진행됨</span>
                               </div>
-                              <div className="h-1 w-20 bg-orange-200 rounded-full overflow-hidden">
-                                <div className="h-full bg-[#E85D26]" style={{ width: `${(Object.keys(answers).length / 250) * 100}%` }} />
+                              <div className="h-1.5 w-full max-w-[200px] bg-orange-200/50 rounded-full overflow-hidden">
+                                <motion.div 
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${(Object.keys(answers).length / 250) * 100}%` }}
+                                  className="h-full bg-[#E85D26]" 
+                                />
                               </div>
                             </div>
                           </div>
-                          <div className="flex flex-col gap-3 w-full sm:w-auto relative z-10">
+                          <div className="flex flex-col gap-3 w-full sm:w-auto relative z-10 shrink-0">
                             <button 
                                onClick={resumeSurvey}
-                               className="px-12 py-5 bg-[#E85D26] text-white rounded-3xl font-black text-base flex items-center justify-center gap-3 hover:bg-[#D44D1D] transition-all shadow-xl shadow-orange-500/30 active:scale-95"
+                               className="px-12 py-5 bg-[#E85D26] text-white rounded-3xl font-black text-lg flex items-center justify-center gap-3 hover:bg-[#D44D1D] hover:-translate-y-1 transition-all shadow-xl shadow-orange-500/20 active:scale-95"
                             >
                               진단 이어서 하기
                             </button>
@@ -388,9 +397,9 @@ export default function App() {
                                    resetSurvey();
                                  }
                                }}
-                               className="px-6 py-3 text-[#9C9590] rounded-2xl font-bold text-xs hover:bg-white hover:text-red-500 transition-all active:scale-95 text-center"
+                               className="px-6 py-3 text-[#9C9590] rounded-2xl font-bold text-xs hover:text-red-500 transition-all active:scale-95 text-center"
                             >
-                              기록 삭제 후 새로 시작
+                              기존 기록 삭제 후 새로 시작
                             </button>
                           </div>
                         </div>
