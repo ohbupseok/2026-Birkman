@@ -291,9 +291,9 @@ export default function App() {
                       : "text-[#9C9590] hover:text-[#5C5751]"
                   )}
                 >
-                  {tab === 'members' && "행동 성향 (Styles)"}
-                  {tab === 'analysis' && "그룹 분석 (Group)"}
-                  {tab === 'signature' && "심층 분석 (Deep)"}
+                  {tab === 'members' && "행동 스타일 (Styles)"}
+                  {tab === 'analysis' && "그룹 리포트 (Group)"}
+                  {tab === 'signature' && "심층 분석 (Signature)"}
                 </button>
               );
             })}
@@ -508,10 +508,10 @@ export default function App() {
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center gap-4">
                     <h3 className="text-2xl font-black flex items-center gap-3">
-                      <Users size={28} className="text-[#E85D26]" />
-                      나의 프로필 (My Profile)
+                      <LayoutDashboard size={28} className="text-[#E85D26]" />
+                      개인 프로필 데이터 (My Profiles)
                     </h3>
-                    <span className="bg-[#E85D26] text-white px-3 py-1 rounded-full text-sm font-black">{team.length}</span>
+                    <span className="bg-[#E85D26]/10 text-[#E85D26] px-3 py-1 rounded-full text-sm font-black border border-orange-200">{team.length}</span>
                   </div>
                   {team.length > 0 && (
                     <button 

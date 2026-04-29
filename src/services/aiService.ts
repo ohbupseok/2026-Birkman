@@ -26,7 +26,13 @@ export async function callAIService(
           generationConfig: { 
             maxOutputTokens: 4000,
             temperature: 0.7
-          }
+          },
+          safetySettings: [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+          ]
         })
       });
       
@@ -41,7 +47,13 @@ export async function callAIService(
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { maxOutputTokens: 4000 }
+              generationConfig: { maxOutputTokens: 4000 },
+              safetySettings: [
+                { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+              ]
             })
           });
           if (fallbackRes.ok) {
@@ -54,6 +66,11 @@ export async function callAIService(
 
       const data = await res.json();
       if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        // Handle finish reason if blocked
+        const finishReason = data.candidates?.[0]?.finishReason;
+        if (finishReason === 'SAFETY' || finishReason === 'RECITATION') {
+          throw new Error(`AI 분석이 안전 정책 또는 기술적 이유로 중단되었습니다. (${finishReason})`);
+        }
         throw new Error("AI로부터 유효한 응답을 받지 못했습니다. API 키와 모델명을 확인해주세요.");
       }
       return data.candidates[0].content.parts[0].text;
@@ -68,8 +85,11 @@ export async function callAIService(
         },
         body: JSON.stringify({
           model: model,
-          messages: [{ role: "user", content: prompt }],
-          max_tokens: 4000
+          messages: [
+            { role: "system", content: "당신은 버크만 성향 분석 전문가입니다. 주어진 수치 데이터를 바탕으로 심층적이고 통찰력 있는 리포트를 작성하며, 절대 중간에 끊기지 않도록 완결성 있게 작성해야 합니다." },
+            { role: "user", content: prompt }
+          ],
+          max_tokens: 3500
         })
       });
       const data = await res.json();
@@ -126,34 +146,17 @@ ${scoresText}
 
 ### 리포트 작성 가이드라인 (반드시 다음 구조를 따를 것):
 
-1. **[인사말 및 분석 개요]**: 사용자의 이름을 언급하며 버크만 데이터 분석의 목적과 리포트가 가져다줄 가치를 따뜻하지만 전문적인 어조로 서술하십시오.
-
-2. **1. [행동 성향 분석 (Usual Behavior)]**: 
-   - 사용자가 사회적/업무적 환경에서 보여주는 가장 효과적이고 생산적인 행동 패턴을 분석하십시오.
-   - 주요 지표(예: AS, SE, PE 등)의 점수가 높은지 낮은지에 따른 구체적인 스타일을 설명하십시오.
-   - 이 사람이 가진 '강력한 리더십', '체계적인 관리 능력', '창의적 접근' 등 핵심 역량을 제목과 함께 강조하십시오.
-
-3. **2. [내면 욕구 및 동기 (Interests & Needs)]**: 
-   - 사용자가 최고의 성과를 내기 위해 주변 환경이나 타인에게 기대하는 '지원 체계'를 분석하십시오.
-   - 어떤 환경에서 에너지를 얻고, 어떤 소통 방식을 선호하는지 구체적으로 서술하십시오.
-
-4. **3. [심리적 스트레스 및 리스크 관리 (Stress)]**: 
-   - Usual과 Need 사이의 간극(Gap 25점 이상)이 있는 지표를 찾아 집중 분석하십시오.
-   - 욕구가 좌절되었을 때 나타날 수 있는 구체적인 스트레스 행동(예: 철회, 공격성, 과도한 통제 등)을 경고하십시오.
-   - 이를 극복하기 위한 심리적/환경적 솔루션을 제안하십시오.
-
-5. **4. [성과 향상을 위한 Self-Coaching Action Plan]**: 
-   - 내일부터 즉시 실천할 수 있는 구체적인 행동 제안 3가지를 리스트 형태로 제공하십시오.
-   - 타인과의 협업 시 유의사항을 포함하십시오.
-
-6. **[마치는 글]**: 분석 대상의 미래와 성장을 응원하는 고무적인 메시지로 마무리하십시오.
+1. **[전문 분석 요약]**: ${member.name}님의 버크만 지표를 관통하는 통합적 통찰력을 한 문단으로 명쾌하게 제시하십시오.
+2. **[강점 및 성과 동력 (Usual Behavior)]**: 사회적 환경에서 발휘되는 핵심 역량 3가지를 도출하십시오.
+3. **[성과의 토대: 욕구 및 동기 (Interests & Needs)]**: 어떤 환경에서 에너지가 충전되는지, 타인에게 기대하는 핵심 지원이 무엇인지 분석하십시오.
+4. **[성장의 열쇠: 스트레스 관리 (Stress)]**: 간극(Gap)이 큰 지표를 중심으로 '보상 행동'을 설명하고, 이를 예방하기 위한 구체적 솔루션을 제안하십시오.
+5. **[집중 실천 과제 (Action Plan)]**: 내일부터 즉시 시작할 '중단할 것(Stop)', '계속할 것(Keep)', '시작할 것(Start)' 모델로 3가지를 제안하십시오.
 
 ### 서식 규정:
-- 마크다운(Markdown) 형식을 사용하십시오.
-- 주요 수치나 키워드는 **굵게** 표시하십시오.
-- '김천수 팀장님'과 같이 존칭을 사용하십시오.
-- 분석 일자는 오늘 날짜를 기준으로 언급하십시오.
-- 절대로 중간에 끊기지 않도록 전체 내용을 완결성 있게 작성하십시오. 만약 내용이 길어질 것 같으면 핵심 위주로 깊이 있게 작성하십시오.
+- 마크다운(Markdown) 형식을 사용하며, 가독성을 위해 불필요하게 긴 문장은 피하십시오.
+- 주요 키워드는 **굵게** 표시하십시오.
+- 절대로 중간에 리포트가 끊기지 않도록 분량을 적절히 조절하되, 전문성은 유지하십시오.
+- 분석 대상의 이름을 '님'과 함께 자주 언급하여 맞춤형 느낌을 주십시오.
 
 언어: 한국어
 톤앤매너: 신중함, 통찰력, 분석적, 격려함

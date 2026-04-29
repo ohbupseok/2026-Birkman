@@ -245,7 +245,14 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({
             className="bg-white rounded-[40px] p-10 md:p-16 border border-[#E5E3DF] shadow-2xl relative overflow-hidden"
           >
             <div className="absolute top-0 left-0 w-full h-2 bg-[#E85D26]" />
-            <div className="absolute top-12 right-12 print:hidden">
+            <div className="absolute top-12 right-12 flex items-center gap-2 print:hidden">
+              <button 
+                onClick={onGenerateAIReport}
+                className="p-3 bg-white text-[#E85D26] hover:bg-orange-50 rounded-2xl transition-all border border-orange-100 shadow-sm"
+                title="다시 생성하기"
+              >
+                <Sparkles size={20} />
+              </button>
               <button 
                 onClick={() => window.print()}
                 className="p-3 bg-[#F8F7F5] text-[#9C9590] hover:text-[#1A1714] rounded-2xl transition-all border border-[#E5E3DF]"
@@ -257,14 +264,14 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({
             
             <div className="mb-12">
               <div className="flex items-center gap-2 text-[#E85D26] mb-2">
-                 <Sparkles size={20} />
-                 <span className="text-xs font-black uppercase tracking-widest">AI Certified Analysis</span>
+                 <Sparkles size={20} className="animate-pulse" />
+                 <span className="text-xs font-black uppercase tracking-widest">AI Certified Professional Analysis</span>
               </div>
-              <h2 className="text-4xl font-black tracking-tighter">개인 심층 코칭 리포트</h2>
-              <p className="text-[#9C9590] font-bold mt-2">Birkman Professional Insight • {new Date().toLocaleDateString()}</p>
+              <h2 className="text-4xl font-black tracking-tighter">버크만 심층 코칭 리포트</h2>
+              <p className="text-[#9C9590] font-bold mt-2">Birkman Strategic Insight • {new Date().toLocaleDateString()}</p>
             </div>
 
-            <div className="prose prose-orange max-w-none prose-h1:text-3xl prose-h1:font-black prose-h2:text-xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-p:text-[#5C5751] prose-li:text-[#5C5751] prose-strong:text-[#1A1714] prose-h2:text-[#E85D26] prose-h2:tracking-tight prose-h2:bg-orange-50 prose-h2:inline-block prose-h2:px-4 prose-h2:py-1 prose-h2:rounded-lg prose-p:leading-8">
+            <div className="prose prose-orange max-w-none prose-h1:text-3xl prose-h1:font-black prose-h2:text-xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-p:text-[#5C5751] prose-li:text-[#5C5751] prose-strong:text-[#1A1714] prose-h2:text-[#E85D26] prose-h2:tracking-tight prose-h2:bg-orange-50 prose-h2:inline-block prose-h2:px-4 prose-h2:py-1 prose-h2:rounded-lg prose-p:leading-8 prose-li:leading-7">
               <ReactMarkdown>{aiReport}</ReactMarkdown>
             </div>
             
@@ -275,10 +282,10 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({
                 </div>
                 <div>
                   <p className="text-xs font-black uppercase tracking-widest text-[#1A1714]">Strategic Excellence</p>
-                  <p className="text-[10px] text-[#9C9590] font-medium leading-none">Powered by Birkman Methodology</p>
+                  <p className="text-[10px] text-[#9C9590] font-medium leading-none">Powered by Birkman AI Engine</p>
                 </div>
               </div>
-              <p className="text-[10px] font-black text-[#D1CEC8] uppercase tracking-[0.2em]">Confidential Certified Document</p>
+              <p className="text-[10px] font-black text-[#D1CEC8] uppercase tracking-[0.2em]">End of Professional Report</p>
             </div>
           </motion.section>
         )}
