@@ -42,7 +42,10 @@ export default function App() {
     clearAll,
     aiConfig,
     setAIConfig,
-    loadSampleData
+    loadSampleData,
+    resumeSurvey,
+    resetSurvey,
+    answers
   } = useBirkmanStore();
 
   const [activeTab, setActiveTab] = useState<'members' | 'analysis' | 'report'>('members');
@@ -350,54 +353,94 @@ export default function App() {
                     </div>
                     
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                      <button 
-                         onClick={() => {
-                           if (!localSurveyorName) {
-                             setError("진단을 시작하려면 참여자 이름을 먼저 입력해주세요.");
-                             document.getElementById('name-input')?.focus();
-                             return;
-                           }
-                           startSurvey(localSurveyorName, localSurveyorRole);
-                         }}
-                         className="px-8 py-4 bg-[#E85D26] text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-[#D44D1D] transition-all shadow-xl shadow-orange-500/20 active:scale-95"
-                      >
-                        <ClipboardCheck size={20} />
-                        정식 진단 시작하기
-                      </button>
-                      <button 
-                        onClick={handleLoadExample}
-                        className="px-8 py-4 bg-[#1A1714] text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-[#33302C] transition-all shadow-lg shadow-black/5"
-                      >
-                        <Sparkles size={18} />
-                        샘플 데이터 로드
-                      </button>
+                      {surveyor.name ? (
+                        <div className="w-full flex flex-col sm:flex-row items-center gap-6 p-8 bg-orange-50 border border-orange-100 rounded-[32px] shadow-sm">
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center gap-2 text-[#E85D26]">
+                              <Sparkles size={16} className="animate-pulse" />
+                              <span className="text-sm font-black uppercase tracking-tighter">Diagnostic in Progress</span>
+                            </div>
+                            <p className="text-lg font-bold leading-tight">
+                              <span className="text-[#E85D26] underline decoration-2 underline-offset-4">{surveyor.name}</span>님, <br />
+                              진행 중인 성향 진단이 있습니다.
+                            </p>
+                            <p className="text-xs text-[#9C9590] font-medium">
+                              현재 {Object.keys(answers).length}개 문항 응답 완료됨
+                            </p>
+                          </div>
+                          <div className="flex flex-col gap-2 w-full sm:w-auto">
+                            <button 
+                               onClick={resumeSurvey}
+                               className="px-10 py-4 bg-[#E85D26] text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 hover:bg-[#D44D1D] transition-all shadow-xl shadow-orange-500/20 active:scale-95"
+                            >
+                              이어서 하기
+                            </button>
+                            <button 
+                               onClick={() => {
+                                 if (confirm("정말 처음부터 다시 시작할까요? 지금까지의 응답 데이터가 삭제됩니다.")) {
+                                   resetSurvey();
+                                 }
+                               }}
+                               className="px-6 py-3 bg-white border border-[#E5E3DF] text-[#9C9590] rounded-2xl font-bold text-xs hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all active:scale-95"
+                            >
+                              기존 기록 삭제 후 [새로 시작]
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <button 
+                             onClick={() => {
+                               if (!localSurveyorName) {
+                                 setError("진단을 시작하려면 참여자 이름을 먼저 입력해주세요.");
+                                 document.getElementById('name-input')?.focus();
+                                 return;
+                               }
+                               startSurvey(localSurveyorName, localSurveyorRole);
+                             }}
+                             className="px-8 py-4 bg-[#E85D26] text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-[#D44D1D] transition-all shadow-xl shadow-orange-500/20 active:scale-95"
+                          >
+                            <ClipboardCheck size={20} />
+                            정식 진단 시작하기
+                          </button>
+                          <button 
+                            onClick={handleLoadExample}
+                            className="px-8 py-4 bg-[#1A1714] text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-[#33302C] transition-all shadow-lg shadow-black/5"
+                          >
+                            <Sparkles size={18} />
+                            샘플 데이터 로드
+                          </button>
+                        </>
+                      )}
                     </div>
 
-                    <div className="pt-4 space-y-4">
-                      <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="flex-1">
-                          <label className="text-[10px] font-black text-[#9C9590] uppercase tracking-widest mb-1 block">참여자 이름</label>
-                          <input 
-                            id="name-input"
-                            type="text" 
-                            placeholder="성함"
-                            value={localSurveyorName}
-                            onChange={(e) => setLocalSurveyorName(e.target.value)}
-                            className="w-full bg-[#F8F7F5] border border-[#E5E3DF] p-3 rounded-xl outline-none focus:border-[#E85D26]"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <label className="text-[10px] font-black text-[#9C9590] uppercase tracking-widest mb-1 block">역할</label>
-                          <input 
-                            type="text" 
-                            placeholder="직무/직함"
-                            value={localSurveyorRole}
-                            onChange={(e) => setLocalSurveyorRole(e.target.value)}
-                            className="w-full bg-[#F8F7F5] border border-[#E5E3DF] p-3 rounded-xl outline-none focus:border-[#E85D26]"
-                          />
+                    {!surveyor.name && (
+                      <div className="pt-4 space-y-4">
+                        <div className="flex flex-col sm:flex-row gap-4">
+                          <div className="flex-1">
+                            <label className="text-[10px] font-black text-[#9C9590] uppercase tracking-widest mb-1 block">참여자 이름</label>
+                            <input 
+                              id="name-input"
+                              type="text" 
+                              placeholder="성함"
+                              value={localSurveyorName}
+                              onChange={(e) => setLocalSurveyorName(e.target.value)}
+                              className="w-full bg-[#F8F7F5] border border-[#E5E3DF] p-3 rounded-xl outline-none focus:border-[#E85D26]"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <label className="text-[10px] font-black text-[#9C9590] uppercase tracking-widest mb-1 block">역할</label>
+                            <input 
+                              type="text" 
+                              placeholder="직무/직함"
+                              value={localSurveyorRole}
+                              onChange={(e) => setLocalSurveyorRole(e.target.value)}
+                              className="w-full bg-[#F8F7F5] border border-[#E5E3DF] p-3 rounded-xl outline-none focus:border-[#E85D26]"
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                   
                   <div className="bg-[#F8F7F5] rounded-3xl p-10 border border-[#E5E3DF] flex flex-col items-center justify-center text-center space-y-4">

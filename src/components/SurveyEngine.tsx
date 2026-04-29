@@ -20,7 +20,7 @@ export const SurveyEngine: React.FC = () => {
     prevStep, 
     surveyor, 
     finishSurvey,
-    resetSurvey 
+    pauseSurvey 
   } = useBirkmanStore();
 
   const currentQ = BIRKMAN_QUESTIONS[currentStep];
@@ -46,13 +46,13 @@ export const SurveyEngine: React.FC = () => {
         </div>
         <button 
           onClick={() => {
-            if (confirm("진단을 종료할까요? 지금까지의 응답은 로컬에 저장되어 나중에 이어할 수 있습니다.")) {
-              resetSurvey();
+            if (confirm("진단을 잠시 멈출까요? 지금까지의 응답은 브라우저에 자동 저장되어 언제든지 이어서 진행할 수 있습니다.")) {
+              pauseSurvey();
             }
           }}
-          className="text-[10px] font-black uppercase text-[#9C9590] hover:text-white border border-[#9C9590]/30 px-3 py-1 rounded-full transition-all"
+          className="text-[10px] font-black uppercase text-orange-400 hover:text-white border border-orange-500/30 px-4 py-1.5 rounded-xl transition-all bg-orange-500/5"
         >
-          진단 종료
+          일시중지 및 저장
         </button>
       </div>
 

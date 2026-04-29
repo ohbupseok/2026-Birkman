@@ -27,6 +27,9 @@ interface BirkmanState {
   
   loadSampleData: () => void;
   
+  pauseSurvey: () => void;
+  resumeSurvey: () => void;
+  
   // Actions
   startSurvey: (name: string, role: string) => void;
   setAnswer: (questionId: number, value: number) => void;
@@ -71,6 +74,14 @@ export const useBirkmanStore = create<BirkmanState>()(
         surveyor: { name, role } 
       }),
 
+      pauseSurvey: () => set({ 
+        isSurveyActive: false 
+      }),
+
+      resumeSurvey: () => set({ 
+        isSurveyActive: true 
+      }),
+
       setAnswer: (questionId, value) => set((state) => ({
         answers: { ...state.answers, [questionId]: value }
       })),
@@ -96,7 +107,8 @@ export const useBirkmanStore = create<BirkmanState>()(
       resetSurvey: () => set({ 
         isSurveyActive: false, 
         currentStep: 0, 
-        answers: {} 
+        answers: {},
+        surveyor: { name: "", role: "" }
       }),
 
       removeResult: (timestamp) => set((state) => ({
