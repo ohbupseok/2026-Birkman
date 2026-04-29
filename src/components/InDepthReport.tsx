@@ -271,7 +271,7 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({
               <p className="text-[#9C9590] font-bold mt-2">Birkman Strategic Insight • {new Date().toLocaleDateString()}</p>
             </div>
 
-            <div className="prose prose-orange max-w-none prose-h1:text-3xl prose-h1:font-black prose-h2:text-xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-p:text-[#5C5751] prose-li:text-[#5C5751] prose-strong:text-[#1A1714] prose-h2:text-[#E85D26] prose-h2:tracking-tight prose-h2:bg-orange-50 prose-h2:inline-block prose-h2:px-4 prose-h2:py-1 prose-h2:rounded-lg prose-p:leading-8 prose-li:leading-7">
+            <div className="prose prose-orange max-w-none prose-h1:text-3xl prose-h1:font-black prose-h2:text-xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-p:text-[#5C5751] prose-li:text-[#5C5751] prose-strong:text-[#1A1714] prose-h2:text-[#E85D26] prose-h2:tracking-tight prose-h2:bg-orange-50 prose-h2:inline-block prose-h2:px-4 prose-h2:py-1 prose-h2:rounded-lg prose-p:leading-8 prose-li:leading-7 break-words whitespace-pre-wrap">
               <ReactMarkdown>{aiReport}</ReactMarkdown>
             </div>
             

@@ -11,120 +11,133 @@ export async function callAIService(
   model: string,
   memberData: MemberData
 ): Promise<string> {
-  const prompt = buildIndividualPrompt(memberData);
+  const scoresText = Object.entries(memberData.scores)
+    .map(([comp, score]) => `${comp}: Usual(${score.usual}), Need(${score.need}), Gap(${Math.abs(score.usual - score.need)})`)
+    .join('\n');
+
+  const baseContext = `
+사용자: ${memberData.name} (${memberData.role || '사용자'})
+색상: ${memberData.primaryColor}
+데이터:
+${scoresText}
+당신은 버크만 전문가입니다. 전문적인 한국어 리포트를 작성하세요.
+`;
+
+  const sections = [
+    {
+      title: "## 1. 전문 분석 요약 (Executive Summary)",
+      prompt: "이 분의 지표를 관통하는 핵심 통찰을 한 문단으로 작성하세요."
+    },
+    {
+      title: "## 2. 행동 강점 분석 (Usual Behavior)",
+      prompt: "사회적 환경에서 발휘되는 핵심 역량과 생산적인 행동 패턴을 구체적으로 분석하세요."
+    },
+    {
+      title: "## 3. 욕구 및 동기 분석 (Needs & Environment)",
+      prompt: "어떤 환경에서 에너지를 얻고, 타인에게 기대하는 핵심 지원이 무엇인지 분석하세요."
+    },
+    {
+      title: "## 4. 스트레스 및 리스크 관리 (Stress Behavior)",
+      prompt: "간극(Gap)이 큰 지표를 중심으로 스트레스 행동을 설명하고 솔루션을 제안하세요."
+    },
+    {
+      title: "## 5. 실행 과제 (Action Plan)",
+      prompt: "Stop, Keep, Start 모델로 3가지 구체적인 실천 과제를 제안하고 격려의 메시지로 마무리하세요."
+    }
+  ];
+
+  let fullReport = "";
 
   try {
-    if (provider === "gemini") {
-      const normalizedModel = model.startsWith('models/') ? model.split('/')[1] : model;
-      const url = `https://generativelanguage.googleapis.com/v1/models/${normalizedModel}:generateContent?key=${apiKey}`;
-      
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { 
-            maxOutputTokens: 4000,
-            temperature: 0.7
-          },
-          safetySettings: [
-            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-          ]
-        })
-      });
-      
-      if (!res.ok) {
+    for (const section of sections) {
+      const sectionPrompt = `
+${baseContext}
+${fullReport ? "지금까지 작성된 내용:\n" + fullReport.slice(-500) + "\n\n이어서 작성할 섹션:" : ""}
+섹션 제목: ${section.title}
+상세 요청: ${section.prompt}
+서식: 마크다운, 키워드 **굵게**, 절대 중간에 끊기지 않도록 완결성 있게 작성.
+`;
+
+      const sectionContent = await callSingleAIStep(provider, apiKey, model, sectionPrompt);
+      fullReport += sectionContent + "\n\n";
+    }
+    return fullReport;
+  } catch (err: any) {
+    console.error("Sectioned Generation Error:", err);
+    throw err;
+  }
+}
+
+async function callSingleAIStep(
+  provider: string,
+  apiKey: string,
+  model: string,
+  prompt: string
+): Promise<string> {
+  if (provider === "gemini") {
+    const normalizedModel = model.startsWith('models/') ? model.split('/')[1] : model;
+    const url = `https://generativelanguage.googleapis.com/v1/models/${normalizedModel}:generateContent?key=${apiKey}`;
+    
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 1500, temperature: 0.7 },
+        safetySettings: [
+          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+        ]
+      })
+    });
+    
+    if (!res.ok) {
         const errorData = await res.json();
         const errorMessage = errorData.error?.message || `Gemini API Error: ${res.statusText}`;
-        
         if (res.status === 404 || errorMessage.includes("not found")) {
-          const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/${normalizedModel}:generateContent?key=${apiKey}`;
-          const fallbackRes = await fetch(fallbackUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { maxOutputTokens: 4000 },
-              safetySettings: [
-                { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-                { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-                { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-                { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-              ]
-            })
-          });
-          if (fallbackRes.ok) {
-            const fallbackData = await fallbackRes.json();
-            return fallbackData.candidates[0].content.parts[0].text;
-          }
+            const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/${normalizedModel}:generateContent?key=${apiKey}`;
+            const fallbackRes = await fetch(fallbackUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { maxOutputTokens: 1500 }
+                })
+            });
+            if (fallbackRes.ok) {
+                const fallbackData = await fallbackRes.json();
+                return fallbackData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            }
         }
         throw new Error(errorMessage);
-      }
-
-      const data = await res.json();
-      if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
-        // Handle finish reason if blocked
-        const finishReason = data.candidates?.[0]?.finishReason;
-        if (finishReason === 'SAFETY' || finishReason === 'RECITATION') {
-          throw new Error(`AI 분석이 안전 정책 또는 기술적 이유로 중단되었습니다. (${finishReason})`);
-        }
-        throw new Error("AI로부터 유효한 응답을 받지 못했습니다. API 키와 모델명을 확인해주세요.");
-      }
-      return data.candidates[0].content.parts[0].text;
     }
-
-    if (provider === "openai") {
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: model,
-          messages: [
-            { role: "system", content: "당신은 버크만 성향 분석 전문가입니다. 주어진 수치 데이터를 바탕으로 심층적이고 통찰력 있는 리포트를 작성하며, 절대 중간에 끊기지 않도록 완결성 있게 작성해야 합니다." },
-            { role: "user", content: prompt }
-          ],
-          max_tokens: 3500
-        })
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error.message);
-      return data.choices[0].message.content;
-    }
-
-    if (provider === "anthropic") {
-      // Note: Anthropic might have CORS issues in browser, typically handled via proxy
-      // Providing standard fetch as fallback
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'dangerously-allow-browser': 'true' // Some SDK bypass
-        },
-        body: JSON.stringify({
-          model: model,
-          max_tokens: 4000,
-          messages: [{ role: "user", content: prompt }]
-        })
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error.message);
-      return data.content[0].text;
-    }
-  } catch (err: any) {
-    console.error(`AI Error (${provider}):`, err);
-    throw new Error(err.message || "AI 분석 중 오류가 발생했습니다.");
+    const data = await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  } 
+  
+  if (provider === "openai") {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 1500
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.choices[0].message.content;
   }
 
-  throw new Error("지원하지 않는 AI 제공자입니다.");
+  throw new Error(`Unsupported provider: ${provider}`);
 }
+
 
 function buildIndividualPrompt(member: MemberData): string {
   const scoresText = Object.entries(member.scores)
