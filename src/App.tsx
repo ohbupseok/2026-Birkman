@@ -45,7 +45,6 @@ export default function App() {
     loadSampleData
   } = useBirkmanStore();
 
-  const [rawInput, setRawInput] = useState('');
   const [activeTab, setActiveTab] = useState<'members' | 'analysis' | 'report'>('members');
   const [isGenerating, setIsGenerating] = useState(false);
   const [report, setReport] = useState<string | null>(null);
@@ -69,30 +68,6 @@ export default function App() {
       primaryColor: r.primaryColor
     }));
   }, [results]);
-
-  const handleParseInput = () => {
-    try {
-      const parsed = JSON.parse(rawInput);
-      const processMember = (m: any) => ({
-        name: m.name,
-        role: m.role || '팀원',
-        scores: m.scores,
-        primaryColor: (['red', 'green', 'yellow', 'blue'].includes(m.primaryColor) ? m.primaryColor : 'blue') as 'red' | 'green' | 'yellow' | 'blue',
-        timestamp: Date.now() + Math.random()
-      });
-
-      if (Array.isArray(parsed)) {
-        const newResults = parsed.map(processMember);
-        useBirkmanStore.setState({ results: [...newResults, ...results] });
-      } else {
-        const newResult = processMember(parsed);
-        useBirkmanStore.setState({ results: [newResult, ...results] });
-      }
-      setRawInput('');
-    } catch (e) {
-      setError("데이터 형식이 올바르지 않습니다. JSON 형식을 확인해주세요.");
-    }
-  };
 
   const handleLoadExample = () => {
     loadSampleData();
@@ -211,8 +186,8 @@ export default function App() {
                       <p className="text-sm">성함과 역할을 입력하고 <span className="font-bold">정식 진단 시작하기</span>를 통해 자신의 성향을 파악하세요.</p>
                     </div>
                     <div className="p-4 bg-[#F8F7F5] rounded-2xl border border-[#E5E3DF]">
-                      <p className="font-bold text-sm mb-1">팁: 전문가 데이터 활용</p>
-                      <p className="text-sm">이미 버크만 진단을 받았다면 우측의 <span className="font-bold">JSON 데이터 추가</span> 기능을 통해 빠르고 정확하게 분석을 시작할 수 있습니다.</p>
+                      <p className="font-bold text-sm mb-1">팁: 샘플 데이터 활용</p>
+                      <p className="text-sm">즉시 분석 기능을 체험하고 싶다면 <span className="font-bold">샘플 데이터 로드</span> 버튼을 통해 미리 준비된 데이터를 불러올 수 있습니다.</p>
                     </div>
                   </div>
                 </section>
@@ -425,34 +400,14 @@ export default function App() {
                     </div>
                   </div>
                   
-                  <div className="bg-[#F8F7F5] rounded-3xl p-8 border border-dashed border-[#D1CEC8]">
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm font-bold flex items-center gap-2">
-                        <Plus size={16} className="text-[#E85D26]" />
-                        데이터 직접 입력 (JSON)
-                      </span>
-                      <div title="이름, 역할, 9개 지표 점수 포함">
-                        <Info size={16} className="text-[#9C9590] cursor-help" />
-                      </div>
+                  <div className="bg-[#F8F7F5] rounded-3xl p-10 border border-[#E5E3DF] flex flex-col items-center justify-center text-center space-y-4">
+                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-[#E5E3DF]">
+                      <ClipboardCheck size={32} className="text-[#E85D26]" />
                     </div>
-                    <textarea 
-                      placeholder='{ "name": "이름", "scores": { "SE": {"usual": 60, "need": 40}, ... } }'
-                      className="w-full h-40 bg-white rounded-2xl border border-[#D1CEC8] p-4 text-xs font-mono focus:ring-2 focus:ring-[#E85D26]/20 focus:border-[#E85D26] outline-none resize-none"
-                      value={rawInput}
-                      onChange={(e) => setRawInput(e.target.value)}
-                    />
-                    <button 
-                      onClick={handleParseInput}
-                      disabled={!rawInput}
-                      className="w-full mt-4 py-3 bg-white border border-[#D1CEC8] rounded-2xl text-sm font-bold hover:bg-[#FDFCFB] transition-all disabled:opacity-50 active:scale-95 shadow-sm"
-                    >
-                      JSON 데이터로 추가
-                    </button>
-                    {error && (
-                      <p className="mt-3 text-xs text-red-500 font-bold flex items-center gap-1 bg-red-50 p-2 rounded-lg border border-red-100">
-                        <AlertTriangle size={12} /> {error}
-                      </p>
-                    )}
+                    <div>
+                      <h4 className="font-bold text-lg">아직 진단 전이신가요?</h4>
+                      <p className="text-sm text-[#9C9590]">성함과 역할을 입력하고 버튼을 눌러 본인의 성향을 즉시 파악해보세요.</p>
+                    </div>
                   </div>
                 </div>
               </section>
