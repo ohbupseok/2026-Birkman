@@ -347,9 +347,9 @@ export default function App() {
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#E85D26]/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
                 <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="space-y-6">
-                    <div className="space-y-2">
-                       <h2 className="text-4xl font-black font-sans leading-tight tracking-tighter">Birkman Personal <br />Insight Diagnostic</h2>
-                       <p className="text-[#5C5751] text-lg">개인의 행동 성향과 내면의 욕구를 분석하여 <br />최적의 퍼포먼스를 낼 수 있는 맞춤형 솔루션을 도출하십시오.</p>
+                    <div className="space-y-4">
+                       <h2 className="text-5xl font-black font-sans leading-[1.1] tracking-tight">당신의 행동 성향으로 <br /><span className="text-[#E85D26]">최상의 퍼포먼스</span>를 설계하세요.</h2>
+                       <p className="text-[#5C5751] text-lg font-medium leading-relaxed">데이터 기반의 버크만 진단으로 당신만의 고유한 강점을 찾고, <br />압도적인 성과를 위한 인사이트를 도출하세요.</p>
                     </div>
                     
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
