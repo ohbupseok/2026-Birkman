@@ -15,14 +15,18 @@ export async function callAIService(
 
   try {
     if (provider === "gemini") {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      // 2026년 기준 v1 API가 안정화 버전이며, gemini-2.5-flash 이상 모델에 권장됩니다.
+      // 사용자가 'models/'를 직접 입력했을 경우를 대비해 정규화합니다.
+      const normalizedModel = model.startsWith('models/') ? model.split('/')[1] : model;
+      const url = `https://generativelanguage.googleapis.com/v1/models/${normalizedModel}:generateContent?key=${apiKey}`;
+      
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: { 
-            maxOutputTokens: 4000,
+            maxOutputTokens: 8000,
             temperature: 0.7
           }
         })
@@ -30,12 +34,28 @@ export async function callAIService(
       
       if (!res.ok) {
         const errorData = await res.json();
+        // 만약 v1에서 실패할 경우 v1beta로 자동 fallback 시도 (레거시 모델 대응)
+        if (res.status === 404) {
+          const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/${normalizedModel}:generateContent?key=${apiKey}`;
+          const fallbackRes = await fetch(fallbackUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: { maxOutputTokens: 8000 }
+            })
+          });
+          if (fallbackRes.ok) {
+            const fallbackData = await fallbackRes.json();
+            return fallbackData.candidates[0].content.parts[0].text;
+          }
+        }
         throw new Error(errorData.error?.message || `Gemini API Error: ${res.statusText}`);
       }
 
       const data = await res.json();
       if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
-        throw new Error("AI로부터 유효한 응답을 받지 못했습니다. API 키와 할당량을 확인해주세요.");
+        throw new Error("AI로부터 유효한 응답을 받지 못했습니다. API 키와 모델명을 확인해주세요.");
       }
       return data.candidates[0].content.parts[0].text;
     }
