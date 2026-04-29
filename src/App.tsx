@@ -172,7 +172,7 @@ export default function App() {
                   </div>
                   <div>
                     <h3 className="text-xl font-black tracking-tight">사용 가이드</h3>
-                    <p className="text-xs text-[#9C9590] font-bold uppercase tracking-widest">Birkman Synergy Consultant</p>
+                    <p className="text-xs text-[#9C9590] font-bold uppercase tracking-widest">Birkman Personal Insight Consultant</p>
                   </div>
                 </div>
                 <button 
@@ -203,16 +203,16 @@ export default function App() {
                 <section className="space-y-4">
                   <div className="flex items-center gap-3">
                     <span className="w-8 h-8 rounded-full bg-[#1A1714] text-white flex items-center justify-center font-black text-sm">2</span>
-                    <h4 className="font-bold text-lg">팀 멤버 추가</h4>
+                    <h4 className="font-bold text-lg">성향 데이터 등록</h4>
                   </div>
                   <div className="ml-11 text-[#5C5751] space-y-3">
                     <div className="p-4 bg-[#F8F7F5] rounded-2xl border border-[#E5E3DF]">
-                      <p className="font-bold text-sm mb-1">방법 A: 정식 진단 시작</p>
-                      <p className="text-sm">참여자 성함을 입력하고 <span className="font-bold">정식 진단 시작하기</span>를 누르세요. 250문항의 설문을 통해 정밀한 데이터를 산출합니다.</p>
+                      <p className="font-bold text-sm mb-1">본론: 나의 데이터 입력</p>
+                      <p className="text-sm">성함과 역할을 입력하고 <span className="font-bold">정식 진단 시작하기</span>를 통해 자신의 성향을 파악하세요.</p>
                     </div>
                     <div className="p-4 bg-[#F8F7F5] rounded-2xl border border-[#E5E3DF]">
-                      <p className="font-bold text-sm mb-1">방법 B: 샘플 데이터 로드</p>
-                      <p className="text-sm">즉시 팀 분석 기능을 체험하고 싶다면 <span className="font-bold">샘플 데이터 로드</span> 버튼을 클릭하세요.</p>
+                      <p className="font-bold text-sm mb-1">팁: 전문가 데이터 활용</p>
+                      <p className="text-sm">이미 버크만 진단을 받았다면 우측의 <span className="font-bold">JSON 데이터 추가</span> 기능을 통해 빠르고 정확하게 분석을 시작할 수 있습니다.</p>
                     </div>
                   </div>
                 </section>
@@ -223,8 +223,8 @@ export default function App() {
                     <h4 className="font-bold text-lg">코칭 분석 리포트</h4>
                   </div>
                   <div className="ml-11 text-[#5C5751] space-y-2 leading-relaxed">
-                    <p>각 멤버 카드의 <span className="font-bold text-[#1A1714]">개별 코칭 리포트 생성</span> 버튼을 클릭하세요.</p>
-                    <p className="text-sm italic">"AI는 특정 멤버의 핵심 강점, 필수 욕구, 스트레스 트리거 및 맞춤형 커뮤니케이션 팁을 생성합니다."</p>
+                    <p>등록된 프로필 카드의 <span className="font-bold text-[#1A1714]">개별 코칭 리포트 생성</span> 버튼을 클릭하세요.</p>
+                    <p className="text-sm italic">"AI는 당신의 핵심 강점, 내면의 욕구(Needs), 스트레스 트리거 및 타인과의 효과적인 소통을 위한 개인별 맞춤 팁을 생성합니다."</p>
                   </div>
                 </section>
               </div>
@@ -249,8 +249,8 @@ export default function App() {
               <Users size={24} />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">Birkman <span className="text-[#E85D26]">Synergy</span></h1>
-              <p className="text-xs text-[#9C9590] font-medium">Certified Team Analysis Tool</p>
+              <h1 className="text-xl font-bold tracking-tight">Birkman <span className="text-[#E85D26]">Personal</span></h1>
+              <p className="text-xs text-[#9C9590] font-medium">Individual Behavioral Insight Tool</p>
             </div>
           </div>
           
@@ -284,9 +284,9 @@ export default function App() {
                     : "text-[#9C9590] hover:text-[#5C5751]"
                 )}
               >
-                {tab === 'members' && "팀 멤버"}
-                {tab === 'analysis' && "시각 분석"}
-                {tab === 'report' && "코칭 리포트"}
+                {tab === 'members' && "행동 성향"}
+                {tab === 'analysis' && "심층 분석"}
+                {tab === 'report' && "분석 리포트"}
               </button>
             ))}
             </nav>
@@ -370,8 +370,8 @@ export default function App() {
                 <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div className="space-y-6">
                     <div className="space-y-2">
-                       <h2 className="text-4xl font-black leading-tight tracking-tighter">Birkman Team <br />Synergy Diagnostic</h2>
-                       <p className="text-[#5C5751] text-lg">데이터 직접 입력 또는 전문가 정식 진단을 통해 <br />팀의 역동성을 분석하고 최적의 솔루션을 도출하십시오.</p>
+                       <h2 className="text-4xl font-black font-sans leading-tight tracking-tighter">Birkman Personal <br />Insight Diagnostic</h2>
+                       <p className="text-[#5C5751] text-lg">개인의 행동 성향과 내면의 욕구를 분석하여 <br />최적의 퍼포먼스를 낼 수 있는 맞춤형 솔루션을 도출하십시오.</p>
                     </div>
                     
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -461,9 +461,9 @@ export default function App() {
               <section>
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center gap-4">
-                    <h3 className="text-2xl font-black flex items-center gap-3">
+                    <h3 className="text-2lx font-black flex items-center gap-3">
                       <Users size={28} className="text-[#E85D26]" />
-                      분석 대상 멤버
+                      나의 프로필 데이터
                     </h3>
                     <span className="bg-[#E85D26] text-white px-3 py-1 rounded-full text-sm font-black">{team.length}</span>
                   </div>
@@ -578,14 +578,14 @@ export default function App() {
                       <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-[#E5E3DF]">
                         <Users size={32} className="text-[#D1CEC8]" />
                       </div>
-                      <h4 className="text-xl font-bold mb-2">팀이 비어 있습니다.</h4>
-                      <p className="text-[#9C9590] max-w-sm mx-auto">상단의 정식 진단을 시작하거나, 샘플 데이터를 로드하여 시너지 분석을 체험해보세요.</p>
+                      <h4 className="text-xl font-bold mb-2">분석 데이터가 없습니다.</h4>
+                      <p className="text-[#9C9590] max-w-sm mx-auto">상단의 정식 진단을 시작하거나, 샘플 데이터를 로드하여 성향 분석을 체험해보세요.</p>
                     </div>
                   )}
                 </div>
               </section>
 
-              {team.length >= 2 && (
+              {team.length >= 1 && (
                 <div className="sticky bottom-8 left-0 right-0 flex justify-center pt-8 z-40">
                   <button 
                     onClick={handleGenerateReport}
@@ -595,12 +595,12 @@ export default function App() {
                     {isGenerating ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        AI 리포트 분석 중...
+                        AI 성향 분석 중...
                       </>
                     ) : (
                       <>
                         <Sparkles size={20} className="text-orange-400 group-hover:animate-pulse" />
-                        AI 팀 시너지 리포트 생성
+                        AI 개인 성향 리포트 생성
                       </>
                     )}
                   </button>
@@ -620,7 +620,7 @@ export default function App() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <section className="bg-white rounded-3xl p-8 border border-[#E5E3DF] shadow-sm">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold">팀 행동 성향 (Usual)</h3>
+                    <h3 className="text-xl font-bold">개인 행동 성향 (Usual)</h3>
                     <div className="flex items-center gap-2">
                        <span className="w-3 h-3 rounded-full bg-[#E85D26]/20 border border-[#E85D26]" />
                        <span className="text-[10px] font-black uppercase text-[#9C9590]">Usual Behavior</span>
@@ -631,7 +631,7 @@ export default function App() {
 
                 <section className="bg-white rounded-3xl p-8 border border-[#E5E3DF] shadow-sm">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold">팀 내면 욕구 (Needs)</h3>
+                    <h3 className="text-xl font-bold">개인 내면 욕구 (Needs)</h3>
                     <div className="flex items-center gap-2">
                        <span className="w-3 h-3 rounded-full bg-blue-500/20 border border-blue-500" />
                        <span className="text-[10px] font-black uppercase text-[#9C9590]">Internal Needs</span>
@@ -644,7 +644,7 @@ export default function App() {
               <section className="bg-white rounded-3xl p-8 border border-[#E5E3DF] shadow-sm">
                 <div className="flex items-center gap-2 mb-8">
                   <BarChart3 className="text-[#E85D26]" size={24} />
-                  <h3 className="text-xl font-bold">9대 지표별 팀 분포 분석</h3>
+                  <h3 className="text-xl font-bold">9대 지표별 성향 분포 분석</h3>
                 </div>
                 <div className="space-y-10">
                   {BIRKMAN_COMPONENTS.map(comp => (
@@ -721,7 +721,7 @@ export default function App() {
                        <Sparkles size={20} />
                        <span className="text-xs font-black uppercase tracking-widest">AI Certified Analysis</span>
                     </div>
-                    <h2 className="text-4xl font-black tracking-tighter">팀 시너지 코칭 리포트</h2>
+                    <h2 className="text-4xl font-black tracking-tighter">개인 성향 분석 리포트</h2>
                     <p className="text-[#9C9590] font-bold mt-2">Birkman Professional Report • {new Date().toLocaleDateString()}</p>
                   </div>
 
@@ -749,7 +749,7 @@ export default function App() {
                   </div>
                   <div className="space-y-3">
                     <h3 className="text-3xl font-black tracking-tighter">분석 리포트가 준비되지 않았습니다.</h3>
-                    <p className="text-[#5C5751] max-w-md mx-auto font-medium leading-relaxed">분석할 팀 멤버를 확보한 후 메인 화면 하단의 [AI 팀 시너지 리포트 생성] 버튼을 클릭하십시오.</p>
+                    <p className="text-[#5C5751] max-w-md mx-auto font-medium leading-relaxed">자신의 프로필을 등록한 후 [AI 개인 성향 리포트 생성] 버튼을 클릭하십시오.</p>
                   </div>
                   <button 
                     onClick={() => setActiveTab('members')}
@@ -771,22 +771,22 @@ export default function App() {
           <div className="space-y-4 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-2 opacity-80 grayscale hover:grayscale-0 transition-all cursor-default">
               <LayoutDashboard size={24} className="text-[#E85D26]" />
-              <span className="text-sm font-black tracking-[0.3em] uppercase text-[#1A1714]">Birkman Synergy Consultant</span>
+              <span className="text-sm font-black tracking-[0.3em] uppercase text-[#1A1714]">Birkman Personal Insight Distributor</span>
             </div>
-            <p className="text-xs text-[#9C9590] max-w-sm font-medium leading-relaxed">본 도구는 정식 Birkman 자격 인증 코치의 분석 로직을 바탕으로 설계되었습니다. 모든 데이터는 팀의 성장을 위한 자료로만 사용하십시오.</p>
+            <p className="text-xs text-[#9C9590] max-w-sm font-medium leading-relaxed">본 도구는 정식 Birkman 자격 인증 코치의 분석 로직을 바탕으로 설계되었습니다. 모든 데이터는 개인의 성찰과 성장을 위한 자료로만 사용하십시오.</p>
           </div>
           
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-12 gap-y-4 text-xs font-black text-[#9C9590] uppercase tracking-widest">
             <a href="#" className="hover:text-[#E85D26] transition-colors">Birkman Method</a>
-            <a href="#" className="hover:text-[#E85D26] transition-colors">Synergy Flow</a>
+            <a href="#" className="hover:text-[#E85D26] transition-colors">Personal Flow</a>
             <a href="#" className="hover:text-[#E85D26] transition-colors">Action Guide</a>
-            <a href="#" className="hover:text-[#E85D26] transition-colors">Team Science</a>
+            <a href="#" className="hover:text-[#E85D26] transition-colors">Behavioral Science</a>
             <a href="#" className="hover:text-[#E85D26] transition-colors">Leadership</a>
             <a href="#" className="hover:text-[#E85D26] transition-colors">Privacy</a>
           </div>
         </div>
         <div className="max-w-7xl mx-auto pt-16 flex justify-center border-t border-[#F8F7F5] mt-16">
-           <p className="text-[10px] font-black text-[#D1CEC8] uppercase tracking-[0.5em]">© 2026 Birkman Synergy Professional System</p>
+           <p className="text-[10px] font-black text-[#D1CEC8] uppercase tracking-[0.5em]">© 2026 Birkman Personal Professional System</p>
         </div>
       </footer>
     </div>
