@@ -20,7 +20,27 @@ import { BirkmanDetailedData } from '../data/sampleReport';
 import { BirkmanMap } from './BirkmanMap';
 import { BIRKMAN_COMPONENTS } from '../constants';
 import { cn } from '../lib/utils';
-import { Info, AlertCircle, TrendingUp, Heart, Sparkles, FileText, LayoutDashboard } from 'lucide-react';
+import { 
+  Info, 
+  AlertCircle, 
+  TrendingUp, 
+  Heart, 
+  Sparkles, 
+  FileText, 
+  LayoutDashboard,
+  Users,
+  Zap,
+  Eye,
+  Target,
+  Settings,
+  Award,
+  Repeat,
+  Brain,
+  ChevronRight,
+  Download,
+  Printer,
+  Share2
+} from 'lucide-react';
 
 interface InDepthReportProps {
   data: BirkmanDetailedData;
@@ -272,6 +292,142 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({
             </div>
 
             <div className="prose prose-orange max-w-none prose-h1:text-3xl prose-h1:font-black prose-h2:text-xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-p:text-[#5C5751] prose-li:text-[#5C5751] prose-strong:text-[#1A1714] prose-h2:text-[#E85D26] prose-h2:tracking-tight prose-h2:bg-orange-50 prose-h2:inline-block prose-h2:px-4 prose-h2:py-1 prose-h2:rounded-lg prose-p:leading-8 prose-li:leading-7 break-words whitespace-pre-wrap">
+              {/* Report Dashboard Summary Inspired by Image 2 */}
+              <div className="not-prose mb-16">
+                <div className="flex items-center justify-between mb-8 border-b border-[#E5E3DF] pb-6">
+                  <div>
+                    <h3 className="text-2xl font-black text-[#1A1714]">시그니처 리포트 요약</h3>
+                    <p className="text-sm font-bold text-[#9C9590] uppercase tracking-wider">{data.name}</p>
+                  </div>
+                  <div className="w-10 h-10 bg-gradient-to-br from-red-500 via-green-500 to-blue-500 p-1 rounded-lg flex items-center justify-center transform rotate-45">
+                    <div className="w-full h-full bg-white rounded-sm flex items-center justify-center transform -rotate-45">
+                      <div className="w-4 h-4 rounded-full bg-[#1A1714]/10" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+                   {Object.entries(data.scores).map(([key, score]) => (
+                     <div key={key} className="bg-[#F8F7F5] border border-[#E5E3DF] rounded-2xl p-5 hover:border-[#E85D26] transition-all">
+                       <div className="flex items-center gap-2 mb-3">
+                          <div className={cn(
+                            "w-8 h-8 rounded-lg flex items-center justify-center text-white",
+                            key === 'socialEnergy' ? "bg-red-500" : 
+                            key === 'physicalEnergy' ? "bg-red-500" :
+                            key === 'emotionalEnergy' ? "bg-blue-500" :
+                            key === 'selfConsciousness' ? "bg-blue-500" :
+                            key === 'assertiveness' ? "bg-red-500" :
+                            key === 'insistence' ? "bg-amber-500" :
+                            key === 'incentives' ? "bg-emerald-500" :
+                            key === 'restlessness' ? "bg-emerald-500" :
+                            "bg-blue-500"
+                          )}>
+                            {key === 'socialEnergy' && <Users size={16} />}
+                            {key === 'physicalEnergy' && <Zap size={16} />}
+                            {key === 'emotionalEnergy' && <Heart size={16} />}
+                            {key === 'selfConsciousness' && <Eye size={16} />}
+                            {key === 'assertiveness' && <Target size={16} />}
+                            {key === 'insistence' && <Settings size={16} />}
+                            {key === 'incentives' && <Award size={16} />}
+                            {key === 'restlessness' && <Repeat size={16} />}
+                            {key === 'thought' && <Brain size={16} />}
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-black uppercase text-[#9C9590] leading-none mb-1">
+                              {key === 'socialEnergy' && '사회에너지'}
+                              {key === 'physicalEnergy' && '신체에너지'}
+                              {key === 'emotionalEnergy' && '감정에너지'}
+                              {key === 'selfConsciousness' && '자의식'}
+                              {key === 'assertiveness' && '자기주장'}
+                              {key === 'insistence' && '완고'}
+                              {key === 'incentives' && '인센티브'}
+                              {key === 'restlessness' && '분주함'}
+                              {key === 'thought' && '사고'}
+                            </p>
+                            <p className="text-[9px] font-bold text-[#D1CEC8] uppercase leading-none">
+                              {key === 'socialEnergy' && '(Social Energy)'}
+                              {key === 'physicalEnergy' && '(Physical Energy)'}
+                              {key === 'emotionalEnergy' && '(Emotional Energy)'}
+                              {key === 'selfConsciousness' && '(Self-Consciousness)'}
+                              {key === 'assertiveness' && '(Assertiveness)'}
+                              {key === 'insistence' && '(Insistence)'}
+                              {key === 'incentives' && '(Incentives)'}
+                              {key === 'restlessness' && '(Restlessness)'}
+                              {key === 'thought' && '(Thought)'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-end border-t border-[#E5E3DF] pt-3">
+                          <div className="text-center">
+                            <p className="text-[9px] font-black text-[#9C9590] uppercase mb-1">평소행동</p>
+                            <p className="text-xl font-black text-[#1A1714]">{score.usual}</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-[9px] font-black text-[#9C9590] uppercase mb-1">욕구</p>
+                            <p className="text-xl font-black text-[#E85D26]">{score.need}</p>
+                          </div>
+                       </div>
+                     </div>
+                   ))}
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                   <div className="bg-white border border-[#E5E3DF] rounded-3xl p-8">
+                      <h4 className="text-sm font-black uppercase tracking-[0.2em] text-[#1A1714] mb-8 text-center border-b border-[#F8F7F5] pb-4">버크만 흥미</h4>
+                      <div className="grid grid-cols-2 gap-y-6 gap-x-8">
+                        {[
+                          { name: '과학', val: 81, color: 'text-red-500' },
+                          { name: '음악', val: 80, color: 'text-blue-500' },
+                          { name: '기술', val: 77, color: 'text-amber-500' },
+                          { name: '숫자', val: 74, color: 'text-emerald-500' },
+                          { name: '문학', val: 73, color: 'text-red-500' },
+                          { name: '설득', val: 67, color: 'text-blue-500' },
+                          { name: '예술', val: 62, color: 'text-amber-500' },
+                          { name: '관리', val: 62, color: 'text-emerald-500' },
+                          { name: '야외', val: 22, color: 'text-red-500' },
+                          { name: '사회복지', val: 14, color: 'text-blue-500' },
+                        ].map(interest => (
+                          <div key={interest.name} className="flex items-center gap-3">
+                            <div className="relative w-12 h-12 flex-shrink-0">
+                               <svg className="w-full h-full transform -rotate-90">
+                                  <circle cx="24" cy="24" r="20" fill="none" stroke="#F1F1F1" strokeWidth="4" />
+                                  <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="4" 
+                                    strokeDasharray={2 * Math.PI * 20}
+                                    strokeDashoffset={2 * Math.PI * 20 * (1 - interest.val/100)}
+                                    className={interest.color}
+                                  />
+                               </svg>
+                               <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black">{interest.val}%</span>
+                            </div>
+                            <span className="text-xs font-bold text-[#1A1714]">{interest.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                   </div>
+
+                   <div className="bg-white border border-[#E5E3DF] rounded-3xl p-8 flex flex-col items-center">
+                      <h4 className="text-sm font-black uppercase tracking-[0.2em] text-[#1A1714] mb-8 text-center border-b border-[#F8F7F5] pb-4 w-full">버크만 맵</h4>
+                      <div className="scale-90 origin-center">
+                        <BirkmanMap usual={data.primaryColor === 'red' ? {x: 25, y: 75} : data.primaryColor === 'green' ? {x: 75, y: 75} : data.primaryColor === 'yellow' ? {x: 25, y: 25} : {x: 75, y: 25}} need={data.primaryColor === 'red' ? {x: 30, y: 70} : {x: 70, y: 30}} />
+                      </div>
+                      <div className="mt-8 grid grid-cols-2 gap-4 text-[9px] font-black uppercase tracking-tighter w-full">
+                         <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rotate-45 border border-black" />
+                            <span>흥미</span>
+                         </div>
+                         <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 border border-black" />
+                            <span>평소행동</span>
+                         </div>
+                         <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full border border-black" />
+                            <span>욕구/스트레스행동</span>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+              </div>
+
               <ReactMarkdown 
                 components={{
                   h2: ({children}) => {

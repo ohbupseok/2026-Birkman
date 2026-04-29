@@ -34,6 +34,8 @@ import { useBirkmanStore } from './store/useBirkmanStore';
 import { SurveyEngine } from './components/SurveyEngine';
 import { BirkmanMap } from './components/BirkmanMap';
 import { InDepthReport } from './components/InDepthReport';
+import { BirkmanColorGuide } from './components/BirkmanColorGuide';
+import { BirkmanOrgOrientation } from './components/BirkmanOrgOrientation';
 import { OH_BEOM_SEOK_DATA } from './data/sampleReport';
 
 export default function App() {
@@ -55,7 +57,8 @@ export default function App() {
     setIndividualReport
   } = useBirkmanStore();
 
-  const [activeTab, setActiveTab] = useState<'members' | 'analysis' | 'report' | 'signature'>('members');
+  const [activeTab, setActiveTab] = useState<'members' | 'signature'>('members');
+  const [signatureSubTab, setSignatureSubTab] = useState<'report' | 'guide' | 'org'>('report');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -691,12 +694,43 @@ export default function App() {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-8"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-1">
                   <h3 className="text-3xl font-black tracking-tight">개인 심층 분석</h3>
-                  <p className="text-[#9C9590] font-bold">Personal Detailed Analysis Report</p>
+                  <p className="text-[#9C9590] font-bold">Personal Detailed Analysis & Reference</p>
                 </div>
-                <div className="flex gap-2">
+                
+                <div className="flex items-center gap-3">
+                  <div className="flex p-1 bg-[#F8F7F5] border border-[#E5E3DF] rounded-xl">
+                    <button 
+                      onClick={() => setSignatureSubTab('report')}
+                      className={cn(
+                        "px-4 py-1.5 rounded-lg text-xs font-black transition-all",
+                        signatureSubTab === 'report' ? "bg-white text-[#E85D26] shadow-sm" : "text-[#9C9590]"
+                      )}
+                    >
+                      상세 리포트
+                    </button>
+                    <button 
+                      onClick={() => setSignatureSubTab('org')}
+                      className={cn(
+                        "px-4 py-1.5 rounded-lg text-xs font-black transition-all",
+                        signatureSubTab === 'org' ? "bg-white text-[#E85D26] shadow-sm" : "text-[#9C9590]"
+                      )}
+                    >
+                      조직지향점
+                    </button>
+                    <button 
+                      onClick={() => setSignatureSubTab('guide')}
+                      className={cn(
+                        "px-4 py-1.5 rounded-lg text-xs font-black transition-all",
+                        signatureSubTab === 'guide' ? "bg-white text-[#E85D26] shadow-sm" : "text-[#9C9590]"
+                      )}
+                    >
+                      컬러 키워드
+                    </button>
+                  </div>
+
                   <select 
                     className="bg-white border border-[#E5E3DF] px-4 py-2 rounded-xl text-sm font-bold outline-none shadow-sm"
                     value={selectedDetailedMember?.id}
@@ -732,12 +766,18 @@ export default function App() {
                 </div>
               </div>
 
-              <InDepthReport 
-                data={selectedDetailedMember} 
-                aiReport={individualReports[selectedDetailedMember.id]}
-                isGenerating={isGenerating}
-                onGenerateAIReport={() => handleGenerateMemberReport(selectedDetailedMember)}
-              />
+              {signatureSubTab === 'report' ? (
+                <InDepthReport 
+                  data={selectedDetailedMember} 
+                  aiReport={individualReports[selectedDetailedMember.id]}
+                  isGenerating={isGenerating}
+                  onGenerateAIReport={() => handleGenerateMemberReport(selectedDetailedMember)}
+                />
+              ) : signatureSubTab === 'org' ? (
+                <BirkmanOrgOrientation name={selectedDetailedMember.name} />
+              ) : (
+                <BirkmanColorGuide />
+              )}
             </motion.div>
           )}
         </AnimatePresence>
