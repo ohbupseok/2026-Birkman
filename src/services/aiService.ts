@@ -15,17 +15,28 @@ export async function callAIService(
 
   try {
     if (provider === "gemini") {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 4000 }
+          generationConfig: { 
+            maxOutputTokens: 4000,
+            temperature: 0.7
+          }
         })
       });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error?.message || `Gemini API Error: ${res.statusText}`);
+      }
+
       const data = await res.json();
-      if (data.error) throw new Error(data.error.message);
+      if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        throw new Error("AI로부터 유효한 응답을 받지 못했습니다. API 키와 할당량을 확인해주세요.");
+      }
       return data.candidates[0].content.parts[0].text;
     }
 
