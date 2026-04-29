@@ -18,7 +18,8 @@ import {
   ClipboardCheck,
   ArrowLeft,
   X,
-  HelpCircle
+  HelpCircle,
+  Award
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
@@ -31,6 +32,9 @@ import { BIRKMAN_QUESTIONS } from './data/questions';
 
 import { useBirkmanStore } from './store/useBirkmanStore';
 import { SurveyEngine } from './components/SurveyEngine';
+import { BirkmanMap } from './components/BirkmanMap';
+import { InDepthReport } from './components/InDepthReport';
+import { OH_BEOM_SEOK_DATA } from './data/sampleReport';
 
 export default function App() {
   const { 
@@ -45,10 +49,11 @@ export default function App() {
     loadSampleData,
     resumeSurvey,
     resetSurvey,
-    answers
+    answers,
+    addResult
   } = useBirkmanStore();
 
-  const [activeTab, setActiveTab] = useState<'members' | 'analysis' | 'report'>('members');
+  const [activeTab, setActiveTab] = useState<'members' | 'analysis' | 'report' | 'signature'>('members');
   const [isGenerating, setIsGenerating] = useState(false);
   const [report, setReport] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +66,8 @@ export default function App() {
   const [tempAIProvider, setTempAIProvider] = useState(aiConfig.provider);
   const [tempAIModel, setTempAIModel] = useState(aiConfig.model);
   const [showHelp, setShowHelp] = useState(false);
+
+  const [selectedDetailedMember, setSelectedDetailedMember] = useState<any>(OH_BEOM_SEOK_DATA);
 
   const team: TeamData = useMemo(() => {
     return results.map(r => ({
@@ -251,7 +258,7 @@ export default function App() {
               {aiConfig.apiKey ? `${aiConfig.provider.toUpperCase()} Active` : "API Key Required"}
             </button>
             <nav className="hidden md:flex items-center gap-1 bg-[#F8F7F5] p-1 rounded-xl border border-[#E5E3DF]">
-            {(['members', 'analysis', 'report'] as const).map((tab) => (
+            {(['members', 'analysis', 'signature', 'report'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -263,8 +270,9 @@ export default function App() {
                 )}
               >
                 {tab === 'members' && "행동 성향"}
-                {tab === 'analysis' && "심층 분석"}
-                {tab === 'report' && "분석 리포트"}
+                {tab === 'analysis' && "그룹 분석"}
+                {tab === 'signature' && "심층 리포트"}
+                {tab === 'report' && "코칭 AI 리포트"}
               </button>
             ))}
             </nav>
@@ -357,15 +365,17 @@ export default function App() {
                         <div className="w-full flex flex-col sm:flex-row items-center gap-10 p-10 bg-orange-50 border border-orange-200 rounded-[40px] shadow-xl shadow-orange-500/5 relative overflow-hidden group">
                           <div className="absolute top-0 right-0 w-48 h-48 bg-orange-200/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-[80px] group-hover:bg-orange-200/40 transition-all" />
                           <div className="flex-1 space-y-5 relative z-10">
-                            <div className="flex items-center gap-2 text-[#E85D26]">
-                              <Sparkles size={18} className="animate-pulse" />
-                              <span className="text-xs font-black uppercase tracking-[0.2em]">Diagnostic Found</span>
-                            </div>
-                            <div className="space-y-1">
-                              <h3 className="text-2xl font-black leading-[1.3] text-[#1A1714]">
-                                <span className="text-[#E85D26] block">{surveyor.name}님,</span>
-                                진행 중인 성향 진단이 있습니다.
-                              </h3>
+                            <div>
+                              <div className="flex items-center gap-2 text-[#E85D26]">
+                                <Sparkles size={18} className="animate-pulse" />
+                                <span className="text-xs font-black uppercase tracking-[0.2em]">Diagnostic Found</span>
+                              </div>
+                              <div className="mt-4">
+                                <h3 className="text-3xl font-black leading-tight text-[#1A1714] tracking-tighter">
+                                  <span className="text-[#E85D26]">{surveyor.name}</span>님, <br />
+                                  중단된 진단이 있습니다.
+                                </h3>
+                              </div>
                             </div>
                             <div className="flex flex-col gap-3">
                               <div className="flex items-center gap-4">
@@ -513,9 +523,9 @@ export default function App() {
                             )}>
                               {member.name.charAt(0)}
                             </div>
-                            <div>
-                              <h4 className="font-bold text-xl tracking-tight">{member.name}</h4>
-                              <p className="text-xs font-black text-[#9C9590] uppercase tracking-widest">{member.role || '팀원'}</p>
+                            <div className="min-w-0">
+                              <h4 className="font-bold text-xl tracking-tight truncate">{member.name}</h4>
+                              <p className="text-xs font-black text-[#9C9590] uppercase tracking-widest truncate">{member.role || '팀원'}</p>
                             </div>
                           </div>
                           <button 
@@ -565,14 +575,37 @@ export default function App() {
                           </div>
                         )}
 
-                        <div className="mt-6 pt-6 border-t border-[#F8F7F5] relative z-10">
+                        <div className="mt-6 pt-6 border-t border-[#F8F7F5] relative z-10 grid grid-cols-2 gap-3">
+                          <button 
+                            onClick={() => {
+                              if (member.name.includes('오범석')) {
+                                setSelectedDetailedMember(OH_BEOM_SEOK_DATA);
+                              } else {
+                                setSelectedDetailedMember({
+                                  ...member,
+                                  mapCoordinates: {
+                                    interests: { x: 50, y: 50 },
+                                    usual: { x: 50, y: 50 },
+                                    need: { x: 50, y: 50 },
+                                    stress: { x: 50, y: 50 },
+                                  },
+                                  interestScores: OH_BEOM_SEOK_DATA.interestScores
+                                });
+                              }
+                              setActiveTab('signature');
+                            }}
+                            className="py-3 bg-[#F8F7F5] text-[#1A1714] rounded-xl text-xs font-black flex items-center justify-center gap-2 hover:bg-[#E5E3DF] transition-all active:scale-95 border border-[#E5E3DF]"
+                          >
+                            <Award size={14} className="text-[#E85D26]" />
+                            심층 분석 리포트
+                          </button>
                           <button 
                             onClick={() => handleGenerateMemberReport(member)}
                             disabled={isGenerating}
-                            className="w-full py-3 bg-[#1A1714] text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 hover:bg-black transition-all active:scale-95 disabled:opacity-50"
+                            className="py-3 bg-[#1A1714] text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 hover:bg-black transition-all active:scale-95 disabled:opacity-50"
                           >
                             <Sparkles size={14} className="text-orange-400" />
-                            개별 코칭 리포트 생성
+                            AI 코칭 리포트
                           </button>
                         </div>
                         
@@ -707,6 +740,59 @@ export default function App() {
                   ))}
                 </div>
               </section>
+            </motion.div>
+          )}
+
+           {activeTab === 'signature' && (
+            <motion.div
+              key="signature"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-8"
+            >
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <h3 className="text-3xl font-black tracking-tight">버크만 시그니처 리포트</h3>
+                  <p className="text-[#9C9590] font-bold">Birkman Signature Deep Analysis</p>
+                </div>
+                <div className="flex gap-2">
+                  <select 
+                    className="bg-white border border-[#E5E3DF] px-4 py-2 rounded-xl text-sm font-bold outline-none"
+                    onChange={(e) => {
+                      const member = team.find(m => m.id === e.target.value);
+                      if (member) {
+                        // If it's Beom-seok, we have full data, otherwise we wrap the member scores
+                        if (member.name.includes('오범석')) {
+                          setSelectedDetailedMember(OH_BEOM_SEOK_DATA);
+                        } else {
+                          setSelectedDetailedMember({
+                            ...member,
+                            mapCoordinates: {
+                              interests: { x: 50, y: 50 },
+                              usual: { x: 50, y: 50 },
+                              need: { x: 50, y: 50 },
+                              stress: { x: 50, y: 50 },
+                            },
+                            interestScores: OH_BEOM_SEOK_DATA.interestScores // Generic placeholder for others
+                          });
+                        }
+                      }
+                    }}
+                  >
+                    {team.some(m => m.name.includes('오범석')) ? (
+                      <option value={team.find(m => m.name.includes('오범석'))?.id}>오범석 (시그니처 샘플)</option>
+                    ) : (
+                      <option value="">멤버를 선택하세요</option>
+                    )}
+                    {team.filter(m => !m.name.includes('오범석')).map(m => (
+                      <option key={m.id} value={m.id}>{m.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <InDepthReport data={selectedDetailedMember} />
             </motion.div>
           )}
 

@@ -75,5 +75,22 @@ export const EXAMPLE_TEAM_DATA = [
       IC: { usual: 60, need: 75 },
     },
     primaryColor: 'green' as const
+  },
+  {
+    id: 'obs-001',
+    name: '오범석 (샘플)',
+    role: 'Senior Project Manager',
+    scores: {
+      SE: { usual: 85, need: 20 },
+      PE: { usual: 40, need: 60 },
+      EE: { usual: 75, need: 45 },
+      AS: { usual: 80, need: 30 },
+      IN: { usual: 30, need: 85 },
+      TH: { usual: 55, need: 92 },
+      RE: { usual: 70, need: 35 },
+      AU: { usual: 60, need: 15 },
+      IC: { usual: 45, need: 70 },
+    },
+    primaryColor: 'blue' as const
   }
 ];
