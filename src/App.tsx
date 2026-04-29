@@ -16,7 +16,9 @@ import {
   Info,
   LayoutDashboard,
   ClipboardCheck,
-  ArrowLeft
+  ArrowLeft,
+  X,
+  HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
@@ -55,6 +57,7 @@ export default function App() {
   const [tempAIKey, setTempAIKey] = useState(aiConfig.apiKey);
   const [tempAIProvider, setTempAIProvider] = useState(aiConfig.provider);
   const [tempAIModel, setTempAIModel] = useState(aiConfig.model);
+  const [showHelp, setShowHelp] = useState(false);
 
   const team: TeamData = useMemo(() => {
     return results.map(r => ({
@@ -148,6 +151,99 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#FDFCFB] text-[#1A1714] font-sans">
+      {/* Help Modal */}
+      <AnimatePresence>
+        {showHelp && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 px-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowHelp(false)}
+              className="absolute inset-0 bg-[#1A1714]/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl bg-white rounded-[40px] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+            >
+              <div className="p-8 border-b border-[#E5E3DF] flex items-center justify-between bg-[#F8F7F5]">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-[#E85D26] rounded-2xl flex items-center justify-center text-white">
+                    <HelpCircle size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black tracking-tight">사용 가이드</h3>
+                    <p className="text-xs text-[#9C9590] font-bold uppercase tracking-widest">Birkman Synergy Consultant</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowHelp(false)}
+                  className="p-2 hover:bg-[#E5E3DF] rounded-xl transition-all"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="p-8 overflow-y-auto space-y-10">
+                <section className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-full bg-[#1A1714] text-white flex items-center justify-center font-black text-sm">1</span>
+                    <h4 className="font-bold text-lg">AI API 설정</h4>
+                  </div>
+                  <div className="ml-11 text-[#5C5751] space-y-2 leading-relaxed">
+                    <p>우측 상단의 <span className="font-bold text-[#E85D26]">API Key Required</span> 버튼을 클릭하여 본인의 API 키를 등록하세요.</p>
+                    <ul className="list-disc ml-5 text-sm space-y-1">
+                      <li><strong>Gemini:</strong> Google AI Studio에서 무료 키 발급 가능</li>
+                      <li><strong>OpenAI:</strong> GPT-4o 등 최신 모델 사용 가능</li>
+                      <li><strong>Anthropic:</strong> Claude 3.5 Sonnet 등 사용 가능</li>
+                    </ul>
+                    <p className="text-[11px] text-[#9C9590]">※ 입력하신 키는 서버에 저장되지 않고 본인의 브라우저 메모리에만 안전하게 유지됩니다.</p>
+                  </div>
+                </section>
+
+                <section className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-full bg-[#1A1714] text-white flex items-center justify-center font-black text-sm">2</span>
+                    <h4 className="font-bold text-lg">팀 멤버 추가</h4>
+                  </div>
+                  <div className="ml-11 text-[#5C5751] space-y-3">
+                    <div className="p-4 bg-[#F8F7F5] rounded-2xl border border-[#E5E3DF]">
+                      <p className="font-bold text-sm mb-1">방법 A: 정식 진단 시작</p>
+                      <p className="text-sm">참여자 성함을 입력하고 <span className="font-bold">정식 진단 시작하기</span>를 누르세요. 250문항의 설문을 통해 정밀한 데이터를 산출합니다.</p>
+                    </div>
+                    <div className="p-4 bg-[#F8F7F5] rounded-2xl border border-[#E5E3DF]">
+                      <p className="font-bold text-sm mb-1">방법 B: 샘플 데이터 로드</p>
+                      <p className="text-sm">즉시 팀 분석 기능을 체험하고 싶다면 <span className="font-bold">샘플 데이터 로드</span> 버튼을 클릭하세요.</p>
+                    </div>
+                  </div>
+                </section>
+
+                <section className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-full bg-[#1A1714] text-white flex items-center justify-center font-black text-sm">3</span>
+                    <h4 className="font-bold text-lg">시너지 분석 및 리포트</h4>
+                  </div>
+                  <div className="ml-11 text-[#5C5751] space-y-2 leading-relaxed">
+                    <p>멤버가 2명 이상 추가되면 화면 하단에 <span className="font-bold text-[#1A1714]">AI 팀 시너지 리포트 생성</span> 버튼이 나타납니다.</p>
+                    <p className="text-sm italic">"AI는 팀원 간의 욕구 충돌 지점, 최고의 협업 조합, 리더를 위한 개인별 코칭 팁을 생성합니다."</p>
+                  </div>
+                </section>
+              </div>
+
+              <div className="p-8 bg-[#F8F7F5] border-t border-[#E5E3DF]">
+                <button 
+                  onClick={() => setShowHelp(false)}
+                  className="w-full py-4 bg-[#1A1714] text-white rounded-2xl font-black shadow-xl active:scale-95 transition-all"
+                >
+                  확인했습니다
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E5E3DF] px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -161,7 +257,14 @@ export default function App() {
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
+            <button 
+              onClick={() => setShowHelp(true)}
+              className="p-2 text-[#9C9590] hover:text-[#1A1714] hover:bg-[#F8F7F5] rounded-xl transition-all"
+              title="도움말 보기"
+            >
+              <HelpCircle size={24} />
+            </button>
             <button 
               onClick={() => setShowSettings(!showSettings)}
               className={cn(
