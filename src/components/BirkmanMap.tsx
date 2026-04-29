@@ -63,16 +63,16 @@ export const BirkmanMap: React.FC<BirkmanMapProps> = ({
         <text x="200" y="205" textAnchor="middle" className="text-[10px] font-bold fill-[#9CA3AF]">Center</text>
 
         {/* Quadrant Labels */}
-        <text x="100" y="100" textAnchor="middle" className="text-sm font-black fill-[#DC2626]">DOER (RED)</text>
-        <text x="300" y="100" textAnchor="middle" className="text-sm font-black fill-[#16A34A]">COMMUNICATOR (GREEN)</text>
-        <text x="100" y="310" textAnchor="middle" className="text-sm font-black fill-[#D97706]">ANALYZER (YELLOW)</text>
-        <text x="300" y="310" textAnchor="middle" className="text-sm font-black fill-[#2563EB]">THINKER (BLUE)</text>
+        <text x="100" y="100" textAnchor="middle" className="text-sm font-black fill-[#DC2626]">행동가 DOER (RED)</text>
+        <text x="300" y="100" textAnchor="middle" className="text-sm font-black fill-[#16A34A]">소통가 COMMUNICATOR (GREEN)</text>
+        <text x="100" y="310" textAnchor="middle" className="text-sm font-black fill-[#D97706]">분석가 ANALYZER (YELLOW)</text>
+        <text x="300" y="310" textAnchor="middle" className="text-sm font-black fill-[#2563EB]">사색가 THINKER (BLUE)</text>
 
         {/* Axis Labels */}
-        <text x="200" y="20" textAnchor="middle" className="text-[10px] font-bold fill-[#9CA3AF]">EXTROVERTED / DIRECT</text>
-        <text x="200" y="390" textAnchor="middle" className="text-[10px] font-bold fill-[#9CA3AF]">INTROVERTED / INDIRECT</text>
-        <text x="10" y="200" textAnchor="middle" transform="rotate(-90, 10, 200)" className="text-[10px] font-bold fill-[#9CA3AF]">TASK / TECHNICAL</text>
-        <text x="390" y="200" textAnchor="middle" transform="rotate(90, 390, 200)" className="text-[10px] font-bold fill-[#9CA3AF]">PEOPLE / SOCIAL</text>
+        <text x="200" y="20" textAnchor="middle" className="text-[10px] font-bold fill-[#9CA3AF]">외향적 / 직접적 (EXTROVERTED / DIRECT)</text>
+        <text x="200" y="390" textAnchor="middle" className="text-[10px] font-bold fill-[#9CA3AF]">내향적 / 간접적 (INTROVERTED / INDIRECT)</text>
+        <text x="10" y="200" textAnchor="middle" transform="rotate(-90, 10, 200)" className="text-[10px] font-bold fill-[#9CA3AF]">과업 중심 (TASK / TECHNICAL)</text>
+        <text x="390" y="200" textAnchor="middle" transform="rotate(90, 390, 200)" className="text-[10px] font-bold fill-[#9CA3AF]">대인 중심 (PEOPLE / SOCIAL)</text>
 
         {/* Markers */}
         {/* Interests: Asterisk */}

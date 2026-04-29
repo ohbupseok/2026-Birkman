@@ -252,8 +252,8 @@ export default function App() {
               <Users size={24} />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">Birkman <span className="text-[#E85D26]">Personal</span></h1>
-              <p className="text-xs text-[#9C9590] font-medium">Individual Behavioral Insight Tool</p>
+              <h1 className="text-xl font-black tracking-tight tracking-tighter">버크만 분석 (Birkman)</h1>
+              <p className="text-[10px] text-[#9C9590] font-black uppercase">Professional Behavioral Insight</p>
             </div>
           </div>
           
@@ -276,22 +276,27 @@ export default function App() {
               {aiConfig.apiKey ? `${aiConfig.provider.toUpperCase()} Active` : "API Key Required"}
             </button>
             <nav className="hidden md:flex items-center gap-1 bg-[#F8F7F5] p-1 rounded-xl border border-[#E5E3DF]">
-            {(['members', 'analysis', 'signature'] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={cn(
-                  "px-4 py-1.5 rounded-lg text-sm font-semibold transition-all",
-                  activeTab === tab 
-                    ? "bg-white text-[#E85D26] shadow-sm" 
-                    : "text-[#9C9590] hover:text-[#5C5751]"
-                )}
-              >
-                {tab === 'members' && "행동 성향"}
-                {tab === 'analysis' && "그룹 분석"}
-                {tab === 'signature' && "심층 리포트"}
-              </button>
-            ))}
+            {(['members', 'analysis', 'signature'] as const).map((tab) => {
+              // Only show analysis if more than one profile exists
+              if (tab === 'analysis' && team.length <= 1) return null;
+
+              return (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={cn(
+                    "px-4 py-1.5 rounded-lg text-xs font-black transition-all",
+                    activeTab === tab 
+                      ? "bg-white text-[#E85D26] shadow-sm" 
+                      : "text-[#9C9590] hover:text-[#5C5751]"
+                  )}
+                >
+                  {tab === 'members' && "행동 성향 (Styles)"}
+                  {tab === 'analysis' && "그룹 분석 (Group)"}
+                  {tab === 'signature' && "심층 분석 (Deep)"}
+                </button>
+              );
+            })}
             </nav>
           </div>
         </div>
@@ -491,7 +496,7 @@ export default function App() {
                       <ClipboardCheck size={32} className="text-[#E85D26]" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-lg">아직 진단 전이신가요?</h4>
+                      <h4 className="font-bold text-lg">아직 진단 전이신가요? (Ready to start?)</h4>
                       <p className="text-sm text-[#9C9590]">성함과 역할을 입력하고 버튼을 눌러 본인의 성향을 즉시 파악해보세요.</p>
                     </div>
                   </div>
@@ -502,9 +507,9 @@ export default function App() {
               <section>
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center gap-4">
-                    <h3 className="text-2lx font-black flex items-center gap-3">
+                    <h3 className="text-2xl font-black flex items-center gap-3">
                       <Users size={28} className="text-[#E85D26]" />
-                      나의 프로필 데이터
+                      나의 프로필 (My Profile)
                     </h3>
                     <span className="bg-[#E85D26] text-white px-3 py-1 rounded-full text-sm font-black">{team.length}</span>
                   </div>
@@ -614,7 +619,7 @@ export default function App() {
                             className="py-3 bg-[#F8F7F5] text-[#1A1714] rounded-xl text-xs font-black flex items-center justify-center gap-2 hover:bg-[#E5E3DF] transition-all active:scale-95 border border-[#E5E3DF]"
                           >
                             <Award size={14} className="text-[#E85D26]" />
-                            심층 분석 리포트
+                            심층 분석 (Deep Analysis)
                           </button>
                           <button 
                             onClick={() => handleGenerateMemberReport(member)}
@@ -622,7 +627,7 @@ export default function App() {
                             className="py-3 bg-[#1A1714] text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 hover:bg-black transition-all active:scale-95 disabled:opacity-50"
                           >
                             <Sparkles size={14} className="text-orange-400" />
-                            AI 코칭 리포트
+                            AI 코칭 (AI Coaching)
                           </button>
                         </div>
                         

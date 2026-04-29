@@ -76,7 +76,7 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({
               <span className="w-8 h-8 rounded-xl bg-[#E85D26] text-white flex items-center justify-center">
                 <TrendingUp size={18} />
               </span>
-              Birkman Map
+              버크만 맵 (Birkman Map)
             </h3>
             <div className="p-2 hover:bg-[#F8F7F5] rounded-xl cursor-help" title="The Birkman Map shows how you relate to tasks and people.">
               <Info size={20} className="text-[#9C9590]" />
@@ -100,7 +100,7 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({
               <span className="w-8 h-8 rounded-xl bg-purple-500 text-white flex items-center justify-center">
                 <Heart size={18} />
               </span>
-              Interests Scores
+              선호 활동 (Interests Scores)
             </h3>
           </div>
           <p className="text-sm text-[#5C5751] leading-relaxed">
@@ -177,17 +177,17 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({
                   </div>
                   <div className="flex gap-8 items-center bg-[#F8F7F5] p-4 rounded-2xl border border-[#E5E3DF]">
                     <div className="text-center">
-                      <p className="text-[10px] font-black text-[#9C9590] uppercase tracking-widest mb-1">Usual</p>
+                      <p className="text-[10px] font-black text-[#1A1714] uppercase tracking-widest mb-1">평소 행동 (Usual)</p>
                       <p className="text-2xl font-black text-[#1A1714]">{score.usual}</p>
                     </div>
                     <div className="w-px h-10 bg-[#E5E3DF]" />
                     <div className="text-center">
-                      <p className="text-[10px] font-black text-[#9C9590] uppercase tracking-widest mb-1">Needs</p>
+                      <p className="text-[10px] font-black text-[#E85D26] uppercase tracking-widest mb-1">내면 욕구 (Needs)</p>
                       <p className="text-2xl font-black text-[#E85D26]">{score.need}</p>
                     </div>
                     <div className="w-px h-10 bg-[#E5E3DF]" />
                     <div className="text-center">
-                      <p className="text-[10px] font-black text-[#9C9590] uppercase tracking-widest mb-1">Stress</p>
+                      <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">스트레스 (Stress)</p>
                       <p className="text-2xl font-black text-red-500">{score.stress}</p>
                     </div>
                   </div>
