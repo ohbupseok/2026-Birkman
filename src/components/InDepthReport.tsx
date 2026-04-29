@@ -53,7 +53,7 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({
           <p className="text-xl text-[#9C9590] font-bold">{data.role}</p>
           <div className="flex flex-wrap gap-2 justify-center md:justify-start pt-2">
             <span className="px-4 py-1 bg-[#F8F7F5] border border-[#E5E3DF] rounded-full text-xs font-black text-[#5C5751] uppercase tracking-widest">
-              Signature Report
+              Personal Insight Report
             </span>
             <span className={cn(
               "px-4 py-1 rounded-full text-xs font-black text-white uppercase tracking-widest",

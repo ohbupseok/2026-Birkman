@@ -60,7 +60,7 @@ export const useBirkmanStore = create<BirkmanState>()(
       individualReports: {},
 
       loadSampleData: () => set({ 
-        results: EXAMPLE_TEAM_DATA.map(member => ({
+        results: [EXAMPLE_TEAM_DATA[0]].map(member => ({
           id: Math.random(),
           name: member.name,
           role: member.role || "",
@@ -100,7 +100,7 @@ export const useBirkmanStore = create<BirkmanState>()(
       })),
 
       finishSurvey: (result) => set((state) => ({
-        results: [result, ...state.results],
+        results: [result], // Only keep the latest result
         isSurveyActive: false,
         currentStep: 0,
         answers: {},

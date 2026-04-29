@@ -284,10 +284,7 @@ export default function App() {
               {aiConfig.apiKey ? `${aiConfig.provider.toUpperCase()} Active` : "API Key Required"}
             </button>
             <nav className="hidden md:flex items-center gap-1 bg-[#F8F7F5] p-1 rounded-xl border border-[#E5E3DF]">
-            {(['members', 'analysis', 'signature'] as const).map((tab) => {
-              // Only show analysis if more than one profile exists
-              if (tab === 'analysis' && team.length <= 1) return null;
-
+            {(['members', 'signature'] as const).map((tab) => {
               return (
                 <button
                   key={tab}
@@ -299,9 +296,8 @@ export default function App() {
                       : "text-[#9C9590] hover:text-[#5C5751]"
                   )}
                 >
-                  {tab === 'members' && "행동 스타일 (Styles)"}
-                  {tab === 'analysis' && "그룹 리포트 (Group)"}
-                  {tab === 'signature' && "심층 분석 (Signature)"}
+                  {tab === 'members' && "나의 성향 (Styles)"}
+                  {tab === 'signature' && "개인 리포트 (Personal)"}
                 </button>
               );
             })}
@@ -627,7 +623,7 @@ export default function App() {
                             className="py-3 bg-[#F8F7F5] text-[#1A1714] rounded-xl text-xs font-black flex items-center justify-center gap-2 hover:bg-[#E5E3DF] transition-all active:scale-95 border border-[#E5E3DF]"
                           >
                             <Award size={14} className="text-[#E85D26]" />
-                            심층 분석 (Deep Analysis)
+                            개인 리포트 (Personal Report)
                           </button>
                           <button 
                             onClick={() => handleGenerateMemberReport(member)}
@@ -635,7 +631,7 @@ export default function App() {
                             className="py-3 bg-[#1A1714] text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 hover:bg-black transition-all active:scale-95 disabled:opacity-50"
                           >
                             <Sparkles size={14} className="text-orange-400" />
-                            AI 코칭 (AI Coaching)
+                            AI 성향 분석 (AI Analysis)
                           </button>
                         </div>
                         
@@ -686,92 +682,6 @@ export default function App() {
             </motion.div>
           )}
 
-          {activeTab === 'analysis' && (
-            <motion.div
-              key="analysis"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.02 }}
-              className="space-y-8"
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <section className="bg-white rounded-3xl p-8 border border-[#E5E3DF] shadow-sm">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold">개인 행동 성향 (Usual)</h3>
-                    <div className="flex items-center gap-2">
-                       <span className="w-3 h-3 rounded-full bg-[#E85D26]/20 border border-[#E85D26]" />
-                       <span className="text-[10px] font-black uppercase text-[#9C9590]">Usual Behavior</span>
-                    </div>
-                  </div>
-                  <TeamRadarChart members={team} mode="usual" />
-                </section>
-
-                <section className="bg-white rounded-3xl p-8 border border-[#E5E3DF] shadow-sm">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold">개인 내면 욕구 (Needs)</h3>
-                    <div className="flex items-center gap-2">
-                       <span className="w-3 h-3 rounded-full bg-blue-500/20 border border-blue-500" />
-                       <span className="text-[10px] font-black uppercase text-[#9C9590]">Internal Needs</span>
-                    </div>
-                  </div>
-                  <TeamRadarChart members={team} mode="need" />
-                </section>
-              </div>
-
-              <section className="bg-white rounded-3xl p-8 border border-[#E5E3DF] shadow-sm">
-                <div className="flex items-center gap-2 mb-8">
-                  <BarChart3 className="text-[#E85D26]" size={24} />
-                  <h3 className="text-xl font-bold">9대 지표별 성향 분포 분석</h3>
-                </div>
-                <div className="space-y-10">
-                  {BIRKMAN_COMPONENTS.map(comp => (
-                    <div key={comp.id} className="space-y-4">
-                      <div className="flex justify-between items-end">
-                        <div className="space-y-1">
-                          <span className="text-sm font-bold text-[#1A1714]">{comp.name}</span>
-                          <p className="text-[10px] text-[#9C9590] max-w-sm leading-tight">{comp.description}</p>
-                        </div>
-                        <div className="flex gap-1.5 flex-wrap justify-end">
-                          {team.map(m => (
-                            <div 
-                              key={m.id} 
-                              className="text-[9px] font-black px-2 py-1 rounded-lg bg-[#F8F7F5] border border-[#E5E3DF] transition-all hover:border-[#E85D26]/40"
-                              title={`${m.name}: ${m.scores[comp.id].usual}`}
-                            >
-                              <span className="opacity-50">{m.name.slice(0, 2)}</span> {m.scores[comp.id].usual}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="relative h-6 bg-[#F8F7F5] rounded-xl overflow-hidden">
-                        {team.map((m, i) => (
-                          <motion.div 
-                            key={m.id}
-                            initial={{ left: 0 }}
-                            animate={{ left: `${m.scores[comp.id].usual}%` }}
-                            className="absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-lg border-2 border-white shadow-md z-10 hover:z-20 transition-all flex items-center justify-center text-[10px] font-bold text-white overflow-hidden"
-                            style={{ 
-                              backgroundColor: Object.values(BIRKMAN_COLORS)[i % 4].hex,
-                              marginLeft: '-10px'
-                            }}
-                          >
-                            {m.name.charAt(0)}
-                          </motion.div>
-                        ))}
-                        <div className="absolute inset-0 flex justify-between px-4 text-[8px] font-black text-[#D1CEC8] leading-6 pointer-events-none uppercase tracking-widest">
-                          <span>Low (0)</span>
-                          <span className="border-l border-dashed border-[#D1CEC8] h-full" />
-                          <span>Average (50)</span>
-                          <span className="border-l border-dashed border-[#D1CEC8] h-full" />
-                          <span>High (100)</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </motion.div>
-          )}
 
           {activeTab === 'signature' && (
             <motion.div
@@ -783,8 +693,8 @@ export default function App() {
             >
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <h3 className="text-3xl font-black tracking-tight">버크만 시그니처 리포트</h3>
-                  <p className="text-[#9C9590] font-bold">Birkman Signature Deep Analysis</p>
+                  <h3 className="text-3xl font-black tracking-tight">개인 심층 분석</h3>
+                  <p className="text-[#9C9590] font-bold">Personal Detailed Analysis Report</p>
                 </div>
                 <div className="flex gap-2">
                   <select 
