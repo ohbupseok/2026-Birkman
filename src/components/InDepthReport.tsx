@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   BarChart, 
   Bar, 
@@ -15,19 +15,28 @@ import {
   ResponsiveContainer,
   Cell
 } from 'recharts';
+import ReactMarkdown from 'react-markdown';
 import { BirkmanDetailedData } from '../data/sampleReport';
 import { BirkmanMap } from './BirkmanMap';
 import { BIRKMAN_COMPONENTS } from '../constants';
 import { cn } from '../lib/utils';
-import { Info, AlertCircle, TrendingUp, Heart } from 'lucide-react';
+import { Info, AlertCircle, TrendingUp, Heart, Sparkles, FileText, LayoutDashboard } from 'lucide-react';
 
 interface InDepthReportProps {
   data: BirkmanDetailedData;
+  aiReport?: string | null;
+  isGenerating?: boolean;
+  onGenerateAIReport?: () => void;
 }
 
-export const InDepthReport: React.FC<InDepthReportProps> = ({ data }) => {
+export const InDepthReport: React.FC<InDepthReportProps> = ({ 
+  data, 
+  aiReport, 
+  isGenerating, 
+  onGenerateAIReport 
+}) => {
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 pb-20">
       {/* Header Profile */}
       <section className="bg-white rounded-[40px] p-8 border border-[#E5E3DF] shadow-sm flex flex-col md:flex-row items-center gap-8">
         <div className={cn(
@@ -227,17 +236,84 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({ data }) => {
         </div>
       </section>
 
+      {/* AI Deep Analysis Section */}
+      <AnimatePresence>
+        {aiReport && (
+          <motion.section 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-[40px] p-10 md:p-16 border border-[#E5E3DF] shadow-2xl relative overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 w-full h-2 bg-[#E85D26]" />
+            <div className="absolute top-12 right-12 print:hidden">
+              <button 
+                onClick={() => window.print()}
+                className="p-3 bg-[#F8F7F5] text-[#9C9590] hover:text-[#1A1714] rounded-2xl transition-all border border-[#E5E3DF]"
+                title="PDF로 저장하기"
+              >
+                <FileText size={24} />
+              </button>
+            </div>
+            
+            <div className="mb-12">
+              <div className="flex items-center gap-2 text-[#E85D26] mb-2">
+                 <Sparkles size={20} />
+                 <span className="text-xs font-black uppercase tracking-widest">AI Certified Analysis</span>
+              </div>
+              <h2 className="text-4xl font-black tracking-tighter">개인 심층 코칭 리포트</h2>
+              <p className="text-[#9C9590] font-bold mt-2">Birkman Professional Insight • {new Date().toLocaleDateString()}</p>
+            </div>
+
+            <div className="prose prose-orange max-w-none prose-h1:text-3xl prose-h1:font-black prose-h2:text-xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-p:text-[#5C5751] prose-li:text-[#5C5751] prose-strong:text-[#1A1714] prose-h2:text-[#E85D26] prose-h2:tracking-tight prose-h2:bg-orange-50 prose-h2:inline-block prose-h2:px-4 prose-h2:py-1 prose-h2:rounded-lg prose-p:leading-8">
+              <ReactMarkdown>{aiReport}</ReactMarkdown>
+            </div>
+            
+            <div className="mt-24 pt-10 border-t border-[#E5E3DF] flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#1A1714] rounded-xl flex items-center justify-center text-white">
+                  <LayoutDashboard size={20} />
+                </div>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-widest text-[#1A1714]">Strategic Excellence</p>
+                  <p className="text-[10px] text-[#9C9590] font-medium leading-none">Powered by Birkman Methodology</p>
+                </div>
+              </div>
+              <p className="text-[10px] font-black text-[#D1CEC8] uppercase tracking-[0.2em]">Confidential Certified Document</p>
+            </div>
+          </motion.section>
+        )}
+      </AnimatePresence>
+
       {/* Summary Action */}
-      <section className="bg-[#1A1714] rounded-[40px] p-12 text-center text-white space-y-6">
-        <h3 className="text-3xl font-black">나를 위한 맞춤 전략이 필요하신가요?</h3>
-        <p className="text-white/60 max-w-lg mx-auto leading-relaxed">
-          이 데이터들을 종합하여 AI가 당신의 핵심 강점과 스트레스 관리법, 
-          그리고 최고의 성과를 위한 최적의 소통 방식을 제안해드립니다.
-        </p>
-        <button className="px-10 py-4 bg-[#E85D26] text-white rounded-2xl font-black hover:bg-[#D44D1D] transition-all shadow-xl shadow-orange-500/20 active:scale-95">
-          AI 코칭 리포트 자동 생성
-        </button>
-      </section>
+      {!aiReport && (
+        <section className="bg-[#1A1714] rounded-[40px] p-12 text-center text-white space-y-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#E85D26]/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+          <div className="relative z-10 space-y-6">
+            <h3 className="text-3xl font-black">나를 위한 맞춤 전략이 필요하신가요?</h3>
+            <p className="text-white/60 max-w-lg mx-auto leading-relaxed">
+              위의 행동 수치들을 종합하여 AI가 당신의 핵심 강점과 스트레스 관리법, 
+              그리고 최고의 성과를 위한 최적의 소통 방식을 전문 리포트로 제안해드립니다.
+            </p>
+            <button 
+              onClick={onGenerateAIReport}
+              disabled={isGenerating}
+              className="px-10 py-5 bg-[#E85D26] text-white rounded-3xl font-black hover:bg-[#D44D1D] transition-all shadow-xl shadow-orange-500/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 mx-auto"
+            >
+              {isGenerating ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  리포트 분석 중...
+                </>
+              ) : (
+                <>
+                  <Sparkles size={20} className="text-orange-200" />
+                  AI 전문 코칭 리포트 자동 생성
+                </>
+              )}
+            </button>
+          </div>
+        </section>
+      )}
     </div>
   );
 };

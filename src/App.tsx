@@ -50,12 +50,13 @@ export default function App() {
     resumeSurvey,
     resetSurvey,
     answers,
-    addResult
+    addResult,
+    individualReports,
+    setIndividualReport
   } = useBirkmanStore();
 
   const [activeTab, setActiveTab] = useState<'members' | 'analysis' | 'report' | 'signature'>('members');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [report, setReport] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [localSurveyorName, setLocalSurveyorName] = useState('');
@@ -90,6 +91,24 @@ export default function App() {
       setShowSettings(true);
       return;
     }
+
+    // Set as active detailed member first
+    if (member.name.includes('오범석')) {
+      setSelectedDetailedMember(OH_BEOM_SEOK_DATA);
+    } else {
+      setSelectedDetailedMember({
+        ...member,
+        mapCoordinates: {
+          interests: { x: 50, y: 50 },
+          usual: { x: 50, y: 50 },
+          need: { x: 50, y: 50 },
+          stress: { x: 50, y: 50 },
+        },
+        interestScores: OH_BEOM_SEOK_DATA.interestScores
+      });
+    }
+    setActiveTab('signature');
+
     setIsGenerating(true);
     setError(null);
     try {
@@ -99,8 +118,7 @@ export default function App() {
         aiConfig.model,
         member
       );
-      setReport(res);
-      setActiveTab('report');
+      setIndividualReport(member.id, res);
     } catch (err: any) {
       setError(`${member.name} 멤버의 리포트 생성 중 오류가 발생했습니다: ${err.message}`);
     } finally {
@@ -258,7 +276,7 @@ export default function App() {
               {aiConfig.apiKey ? `${aiConfig.provider.toUpperCase()} Active` : "API Key Required"}
             </button>
             <nav className="hidden md:flex items-center gap-1 bg-[#F8F7F5] p-1 rounded-xl border border-[#E5E3DF]">
-            {(['members', 'analysis', 'signature', 'report'] as const).map((tab) => (
+            {(['members', 'analysis', 'signature'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -272,7 +290,6 @@ export default function App() {
                 {tab === 'members' && "행동 성향"}
                 {tab === 'analysis' && "그룹 분석"}
                 {tab === 'signature' && "심층 리포트"}
-                {tab === 'report' && "코칭 AI 리포트"}
               </button>
             ))}
             </nav>
@@ -743,7 +760,7 @@ export default function App() {
             </motion.div>
           )}
 
-           {activeTab === 'signature' && (
+          {activeTab === 'signature' && (
             <motion.div
               key="signature"
               initial={{ opacity: 0, y: 10 }}
@@ -758,11 +775,11 @@ export default function App() {
                 </div>
                 <div className="flex gap-2">
                   <select 
-                    className="bg-white border border-[#E5E3DF] px-4 py-2 rounded-xl text-sm font-bold outline-none"
+                    className="bg-white border border-[#E5E3DF] px-4 py-2 rounded-xl text-sm font-bold outline-none shadow-sm"
+                    value={selectedDetailedMember?.id}
                     onChange={(e) => {
                       const member = team.find(m => m.id === e.target.value);
                       if (member) {
-                        // If it's Beom-seok, we have full data, otherwise we wrap the member scores
                         if (member.name.includes('오범석')) {
                           setSelectedDetailedMember(OH_BEOM_SEOK_DATA);
                         } else {
@@ -774,7 +791,7 @@ export default function App() {
                               need: { x: 50, y: 50 },
                               stress: { x: 50, y: 50 },
                             },
-                            interestScores: OH_BEOM_SEOK_DATA.interestScores // Generic placeholder for others
+                            interestScores: OH_BEOM_SEOK_DATA.interestScores
                           });
                         }
                       }
@@ -792,74 +809,12 @@ export default function App() {
                 </div>
               </div>
 
-              <InDepthReport data={selectedDetailedMember} />
-            </motion.div>
-          )}
-
-          {activeTab === 'report' && (
-            <motion.div
-              key="report"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="max-w-4xl mx-auto space-y-8 pb-20"
-            >
-              {report ? (
-                <div className="bg-white rounded-[40px] p-10 md:p-16 border border-[#E5E3DF] shadow-2xl relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-2 bg-[#E85D26]" />
-                  <div className="absolute top-12 right-12">
-                    <button 
-                      onClick={() => window.print()}
-                      className="p-3 bg-[#F8F7F5] text-[#9C9590] hover:text-[#1A1714] rounded-2xl transition-all border border-[#E5E3DF]"
-                      title="PDF로 저장하기"
-                    >
-                      <FileText size={24} />
-                    </button>
-                  </div>
-                  
-                  <div className="mb-12">
-                    <div className="flex items-center gap-2 text-[#E85D26] mb-2">
-                       <Sparkles size={20} />
-                       <span className="text-xs font-black uppercase tracking-widest">AI Certified Analysis</span>
-                    </div>
-                    <h2 className="text-4xl font-black tracking-tighter">개인 성향 분석 리포트</h2>
-                    <p className="text-[#9C9590] font-bold mt-2">Birkman Professional Report • {new Date().toLocaleDateString()}</p>
-                  </div>
-
-                  <div className="prose prose-orange max-w-none prose-h1:text-3xl prose-h1:font-black prose-h2:text-xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-4 prose-p:text-[#5C5751] prose-p:leading-relaxed prose-li:text-[#5C5751] prose-strong:text-[#1A1714] prose-h2:text-[#E85D26] prose-h2:tracking-tight prose-h2:bg-orange-50 prose-h2:inline-block prose-h2:px-4 prose-h2:py-1 prose-h2:rounded-lg">
-                    <ReactMarkdown>{report}</ReactMarkdown>
-                  </div>
-                  
-                  <div className="mt-24 pt-10 border-t border-[#E5E3DF] flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#1A1714] rounded-xl flex items-center justify-center text-white">
-                        <LayoutDashboard size={20} />
-                      </div>
-                      <div>
-                        <p className="text-xs font-black uppercase tracking-widest text-[#1A1714]">Strategic Excellence</p>
-                        <p className="text-[10px] text-[#9C9590] font-medium leading-none">Powered by Birkman Methodology</p>
-                      </div>
-                    </div>
-                    <p className="text-[10px] font-black text-[#D1CEC8] uppercase tracking-[0.2em]">Confidential Certified Document</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="py-32 text-center space-y-8 bg-white border border-[#E5E3DF] rounded-[40px]">
-                  <div className="w-24 h-24 bg-[#F8F7F5] rounded-[32px] flex items-center justify-center mx-auto mb-6 shadow-sm border border-[#E5E3DF]">
-                    <Sparkles size={48} className="text-[#D1CEC8]" />
-                  </div>
-                  <div className="space-y-3">
-                    <h3 className="text-3xl font-black tracking-tighter">분석 리포트가 준비되지 않았습니다.</h3>
-                    <p className="text-[#5C5751] max-w-md mx-auto font-medium leading-relaxed">자신의 프로필을 등록한 후 [AI 개인 성향 리포트 생성] 버튼을 클릭하십시오.</p>
-                  </div>
-                  <button 
-                    onClick={() => setActiveTab('members')}
-                    className="px-10 py-4 bg-[#1A1714] text-white rounded-2xl font-black hover:bg-black transition-all shadow-lg active:scale-95 flex items-center gap-2 mx-auto"
-                  >
-                    멤버 관리로 돌아가기
-                    <ChevronRight size={18} />
-                  </button>
-                </div>
-              )}
+              <InDepthReport 
+                data={selectedDetailedMember} 
+                aiReport={individualReports[selectedDetailedMember.id]}
+                isGenerating={isGenerating}
+                onGenerateAIReport={() => handleGenerateMemberReport(selectedDetailedMember)}
+              />
             </motion.div>
           )}
         </AnimatePresence>

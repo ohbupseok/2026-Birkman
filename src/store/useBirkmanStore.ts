@@ -24,6 +24,7 @@ interface BirkmanState {
   
   // Historical Results (Team Data)
   results: BirkmanResult[];
+  individualReports: Record<string, string>; // memberName/Id -> report content
   
   loadSampleData: () => void;
   
@@ -40,6 +41,7 @@ interface BirkmanState {
   resetSurvey: () => void;
   removeResult: (timestamp: number) => void;
   clearAll: () => void;
+  setIndividualReport: (memberId: string, report: string) => void;
 }
 
 export const useBirkmanStore = create<BirkmanState>()(
@@ -55,6 +57,7 @@ export const useBirkmanStore = create<BirkmanState>()(
         model: 'gemini-2.5-flash'
       },
       results: [],
+      individualReports: {},
 
       loadSampleData: () => set({ 
         results: EXAMPLE_TEAM_DATA.map(member => ({
@@ -112,10 +115,17 @@ export const useBirkmanStore = create<BirkmanState>()(
       }),
 
       removeResult: (timestamp) => set((state) => ({
-        results: state.results.filter(r => r.timestamp !== timestamp)
+        results: state.results.filter(r => r.timestamp !== timestamp),
+        individualReports: Object.fromEntries(
+          Object.entries(state.individualReports).filter(([k]) => !k.includes(String(timestamp)))
+        )
       })),
 
-      clearAll: () => set({ results: [] })
+      clearAll: () => set({ results: [], individualReports: {} }),
+
+      setIndividualReport: (memberId, report) => set((state) => ({
+        individualReports: { ...state.individualReports, [memberId]: report }
+      }))
     }),
     {
       name: "birkman-storage",
