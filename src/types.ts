@@ -24,6 +24,7 @@ export interface MemberData {
     [key: string]: BirkmanScore;
   };
   primaryColor?: 'red' | 'green' | 'yellow' | 'blue';
+  reliabilityScore?: number;
 }
 
 export type TeamData = MemberData[];

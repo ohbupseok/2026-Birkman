@@ -20,8 +20,15 @@ export const SurveyEngine: React.FC = () => {
     prevStep, 
     surveyor, 
     finishSurvey,
-    pauseSurvey 
+    pauseSurvey,
+    responseTimes
   } = useBirkmanStore();
+
+  const [questionStartTime, setQuestionStartTime] = React.useState<number>(Date.now());
+
+  React.useEffect(() => {
+    setQuestionStartTime(Date.now());
+  }, [currentStep]);
 
   const currentQ = BIRKMAN_QUESTIONS[currentStep];
   const progress = Math.round(((currentStep + 1) / 250) * 100);
@@ -29,7 +36,7 @@ export const SurveyEngine: React.FC = () => {
   const isLast = currentStep === 249;
 
   const handleFinish = () => {
-    const result = analyzeBirkman(surveyor.name, surveyor.role, answers);
+    const result = analyzeBirkman(surveyor.name, surveyor.role, answers, responseTimes);
     finishSurvey(result);
   };
 
@@ -106,7 +113,9 @@ export const SurveyEngine: React.FC = () => {
               <button
                 key={val}
                 onClick={() => {
-                  setAnswer(currentStep, val);
+                  const now = Date.now();
+                  const elapsed = now - questionStartTime;
+                  setAnswer(currentStep, val, elapsed);
                   if (!isLast) setTimeout(nextStep, 150);
                 }}
                 className={cn(

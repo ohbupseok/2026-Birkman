@@ -12,6 +12,7 @@ interface BirkmanState {
   // Survey Progress
   currentStep: number;
   answers: Record<number, number>; // questionId -> value
+  responseTimes: Record<number, number>; // questionId -> ms
   isSurveyActive: boolean;
   surveyor: { name: string; role: string };
   
@@ -33,7 +34,7 @@ interface BirkmanState {
   
   // Actions
   startSurvey: (name: string, role: string) => void;
-  setAnswer: (questionId: number, value: number) => void;
+  setAnswer: (questionId: number, value: number, timeMs: number) => void;
   setAIConfig: (config: { provider: 'gemini' | 'openai' | 'anthropic', apiKey: string, model: string }) => void;
   prevStep: () => void;
   nextStep: () => void;
@@ -49,6 +50,7 @@ export const useBirkmanStore = create<BirkmanState>()(
     (set) => ({
       currentStep: 0,
       answers: {},
+      responseTimes: {},
       isSurveyActive: false,
       surveyor: { name: "", role: "" },
       aiConfig: {
@@ -74,6 +76,7 @@ export const useBirkmanStore = create<BirkmanState>()(
         isSurveyActive: true, 
         currentStep: 0, 
         answers: {}, 
+        responseTimes: {},
         surveyor: { name, role } 
       }),
 
@@ -85,8 +88,9 @@ export const useBirkmanStore = create<BirkmanState>()(
         isSurveyActive: true 
       }),
 
-      setAnswer: (questionId, value) => set((state) => ({
-        answers: { ...state.answers, [questionId]: value }
+      setAnswer: (questionId, value, timeMs) => set((state) => ({
+        answers: { ...state.answers, [questionId]: value },
+        responseTimes: { ...state.responseTimes, [questionId]: timeMs }
       })),
 
       setAIConfig: (aiConfig) => set({ aiConfig }),
@@ -104,6 +108,7 @@ export const useBirkmanStore = create<BirkmanState>()(
         isSurveyActive: false,
         currentStep: 0,
         answers: {},
+        responseTimes: {},
         surveyor: { name: "", role: "" }
       })),
 
@@ -111,6 +116,7 @@ export const useBirkmanStore = create<BirkmanState>()(
         isSurveyActive: false, 
         currentStep: 0, 
         answers: {},
+        responseTimes: {},
         surveyor: { name: "", role: "" }
       }),
 

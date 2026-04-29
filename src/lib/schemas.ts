@@ -52,6 +52,8 @@ export const BirkmanResultSchema = z.object({
   scores: z.record(BirkmanComponentSchema, BirkmanScoreSchema),
   primaryColor: z.enum(["red", "green", "yellow", "blue"]),
   timestamp: z.number(),
+  responseTimes: z.record(z.string(), z.number()).optional(), // questionId -> ms
+  reliabilityScore: z.number().min(0).max(100).optional(),
 });
 
 export type BirkmanResult = z.infer<typeof BirkmanResultSchema>;
