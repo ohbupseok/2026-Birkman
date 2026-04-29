@@ -6,6 +6,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { UserAnswer, BirkmanResult } from "../lib/schemas";
+import { EXAMPLE_TEAM_DATA } from "../constants";
 
 interface BirkmanState {
   // Survey Progress
@@ -23,6 +24,8 @@ interface BirkmanState {
   
   // Historical Results (Team Data)
   results: BirkmanResult[];
+  
+  loadSampleData: () => void;
   
   // Actions
   startSurvey: (name: string, role: string) => void;
@@ -49,6 +52,17 @@ export const useBirkmanStore = create<BirkmanState>()(
         model: 'gemini-2.5-flash'
       },
       results: [],
+
+      loadSampleData: () => set({ 
+        results: EXAMPLE_TEAM_DATA.map(member => ({
+          id: Math.random(),
+          name: member.name,
+          role: member.role || "",
+          scores: member.scores,
+          primaryColor: member.primaryColor || "blue",
+          timestamp: Date.now()
+        }))
+      }),
 
       startSurvey: (name, role) => set({ 
         isSurveyActive: true, 

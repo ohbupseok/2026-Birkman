@@ -3,20 +3,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { TeamData } from "../types";
+import { MemberData } from "../types";
 
 export async function callAIService(
   provider: 'gemini' | 'openai' | 'anthropic',
   apiKey: string,
   model: string,
-  teamData: TeamData
+  memberData: MemberData
 ): Promise<string> {
-  const prompt = buildPrompt(teamData);
+  const prompt = buildIndividualPrompt(memberData);
 
   try {
     if (provider === "gemini") {
-      // 2026년 기준 v1 API가 안정화 버전이며, gemini-2.5-flash 이상 모델에 권장됩니다.
-      // 사용자가 'models/'를 직접 입력했을 경우를 대비해 정규화합니다.
       const normalizedModel = model.startsWith('models/') ? model.split('/')[1] : model;
       const url = `https://generativelanguage.googleapis.com/v1/models/${normalizedModel}:generateContent?key=${apiKey}`;
       
@@ -26,7 +24,7 @@ export async function callAIService(
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: { 
-            maxOutputTokens: 8000,
+            maxOutputTokens: 4000,
             temperature: 0.7
           }
         })
@@ -34,15 +32,16 @@ export async function callAIService(
       
       if (!res.ok) {
         const errorData = await res.json();
-        // 만약 v1에서 실패할 경우 v1beta로 자동 fallback 시도 (레거시 모델 대응)
-        if (res.status === 404) {
+        const errorMessage = errorData.error?.message || `Gemini API Error: ${res.statusText}`;
+        
+        if (res.status === 404 || errorMessage.includes("not found")) {
           const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/${normalizedModel}:generateContent?key=${apiKey}`;
           const fallbackRes = await fetch(fallbackUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { maxOutputTokens: 8000 }
+              generationConfig: { maxOutputTokens: 4000 }
             })
           });
           if (fallbackRes.ok) {
@@ -50,7 +49,7 @@ export async function callAIService(
             return fallbackData.candidates[0].content.parts[0].text;
           }
         }
-        throw new Error(errorData.error?.message || `Gemini API Error: ${res.statusText}`);
+        throw new Error(errorMessage);
       }
 
       const data = await res.json();
@@ -107,40 +106,31 @@ export async function callAIService(
   throw new Error("지원하지 않는 AI 제공자입니다.");
 }
 
-function buildPrompt(teamData: TeamData): string {
-  const teamContext = teamData.map(member => {
-    let scoresText = Object.entries(member.scores)
-      .map(([comp, score]) => `${comp}: Usual(${score.usual}), Need(${score.need}), Gap(${Math.abs(score.usual - score.need)})`)
-      .join('\n');
-    
-    return `
-멤버이름: ${member.name}
-역할: ${member.role || 'N/A'}
-주요색상: ${member.primaryColor || 'N/A'}
-점수 상세:
-${scoresText}
-`;
-  }).join('\n---\n');
+function buildIndividualPrompt(member: MemberData): string {
+  const scoresText = Object.entries(member.scores)
+    .map(([comp, score]) => `${comp}: Usual(${score.usual}), Need(${score.need}), Gap(${Math.abs(score.usual - score.need)})`)
+    .join('\n');
 
   return `
-당신은 버크만 자격 인증 코치(Birkman Certified Consultant)이자 팀 시너지 분석 전문가입니다.
-제공된 팀원들의 Birkman Cloud V4 데이터를 바탕으로 전문적인 [팀 시너지 코칭 리포트]를 작성하십시오.
+당신은 버크만 자격 인증 코치(Birkman Certified Consultant)입니다.
+다음 멤버의 Birkman Cloud V4 데이터를 바탕으로 [개인 맞춤형 코칭 리포트]를 작성하십시오.
+핵심 위주로 명확하고 실용적인 인사이트를 제공하십시오.
 
-### 분석할 팀 데이터:
-${teamContext}
+### 분석할 멤버 데이터:
+성함: ${member.name}
+역할: ${member.role || '팀원'}
+주요색상: ${member.primaryColor}
+지표별 점수:
+${scoresText}
 
-### 데이터 해석 지침 (Automatic Expert Logic):
-1. **U-N Gap 분석**: '평소 행동(U)'과 '내면의 욕구(N)'의 점수 차이가 25점 이상인 항목을 찾아 스트레스 위험 지점으로 식별하십시오.
-2. **Stress behavior 추론**: 욕구가 충족되지 않았을 때 나타나는 행동을 예측하십시오.
-3. **Synergy & Conflict**: 팀원 간 점수를 비교하여 최고의 협업 지점(Synergy)과 잠재적 갈등 지점(Conflict)을 도출하십시오.
-
-### 출력 형식 (반드시 다음 구조를 따르세요):
-1. **[Executive Summary]**: 팀 전체의 색깔과 역동성을 한 줄로 요약하십시오.
-2. **[Individual Deep-Dive]**: 멤버별 핵심 강점, 필수 욕구, 스트레스 트리거를 심층 분석하십시오.
-3. **[Synergy Roadmap]**: 협업 시 '해야 할 것(Do)'과 '하지 말아야 할 것(Don't)'을 구체적으로 제시하십시오.
-4. **[Action Plan]**: 성과 극대화를 위한 리더의 맞춤형 코칭 멘트와 운영 전략 3가지를 제안하십시오.
+### 리포트 구성:
+1. **[Core Profile]**: 이 멤버의 핵심 강점과 일하는 스타일을 2~3문장으로 정의하십시오.
+2. **[Needs & Stress]**: 주요 욕구(Needs)와 이것이 충족되지 않았을 때의 스트레스 행동(Stress)을 분석하십시오. (특히 Gap이 25점 이상인 영역 집중)
+3. **[Communication Tip]**: 동료들이 이 멤버와 원활하게 소통하기 위해 '반드시 해야 할 것'과 '피해야 할 것'을 하나씩 제시하십시오.
+4. **[Growth Action]**: 이 멤버의 성장을 위한 단기 실행 과제 2가지를 제안하십시오.
 
 언어: 한국어
-톤앤매너: 전문적, 신뢰감, 실용적
+톤앤매너: 전문적, 따뜻함, 실천적
+마지막에 짧은 응원 메시지를 포함하십시오.
 `;
 }

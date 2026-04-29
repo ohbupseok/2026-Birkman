@@ -41,7 +41,8 @@ export default function App() {
     surveyor,
     clearAll,
     aiConfig,
-    setAIConfig
+    setAIConfig,
+    loadSampleData
   } = useBirkmanStore();
 
   const [rawInput, setRawInput] = useState('');
@@ -94,24 +95,11 @@ export default function App() {
   };
 
   const handleLoadExample = () => {
-    // Example data loading logic could be moved to store if needed
-    // For now, assume it's added to the store's results
-    // Mapping EXAMPLE_TEAM_DATA back to BirkmanResult
-    const mockResults = EXAMPLE_TEAM_DATA.map(m => ({
-      name: m.name,
-      role: m.role || '',
-      scores: m.scores as any,
-      primaryColor: m.primaryColor as any,
-      timestamp: Date.now() + Math.random()
-    }));
-    useBirkmanStore.setState({ results: [...mockResults, ...results] });
+    loadSampleData();
+    setError(null);
   };
 
-  const handleGenerateReport = async () => {
-    if (team.length < 2) {
-      setError("팀 시너지 분석을 위해 최소 2명의 멤버가 필요합니다.");
-      return;
-    }
+  const handleGenerateMemberReport = async (member: MemberData) => {
     if (!aiConfig.apiKey) {
       setError("AI API 키가 설정되지 않았습니다. 상단 설정을 확인해주세요.");
       setShowSettings(true);
@@ -124,15 +112,24 @@ export default function App() {
         aiConfig.provider,
         aiConfig.apiKey,
         aiConfig.model,
-        team
+        member
       );
       setReport(res);
       setActiveTab('report');
     } catch (err: any) {
-      setError(`리포트 생성 중 오류가 발생했습니다: ${err.message}`);
+      setError(`${member.name} 멤버의 리포트 생성 중 오류가 발생했습니다: ${err.message}`);
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handleGenerateReport = async () => {
+    if (team.length === 0) {
+      setError("분석할 멤버가 없습니다.");
+      return;
+    }
+    // 팀 전체 분석 대신 첫 번째 멤버를 기본으로 분석하도록 조정 (토큰 다이어트)
+    handleGenerateMemberReport(team[0]);
   };
 
   const getGapIssues = (member: MemberData) => {
@@ -223,11 +220,11 @@ export default function App() {
                 <section className="space-y-4">
                   <div className="flex items-center gap-3">
                     <span className="w-8 h-8 rounded-full bg-[#1A1714] text-white flex items-center justify-center font-black text-sm">3</span>
-                    <h4 className="font-bold text-lg">시너지 분석 및 리포트</h4>
+                    <h4 className="font-bold text-lg">코칭 분석 리포트</h4>
                   </div>
                   <div className="ml-11 text-[#5C5751] space-y-2 leading-relaxed">
-                    <p>멤버가 2명 이상 추가되면 화면 하단에 <span className="font-bold text-[#1A1714]">AI 팀 시너지 리포트 생성</span> 버튼이 나타납니다.</p>
-                    <p className="text-sm italic">"AI는 팀원 간의 욕구 충돌 지점, 최고의 협업 조합, 리더를 위한 개인별 코칭 팁을 생성합니다."</p>
+                    <p>각 멤버 카드의 <span className="font-bold text-[#1A1714]">개별 코칭 리포트 생성</span> 버튼을 클릭하세요.</p>
+                    <p className="text-sm italic">"AI는 특정 멤버의 핵심 강점, 필수 욕구, 스트레스 트리거 및 맞춤형 커뮤니케이션 팁을 생성합니다."</p>
                   </div>
                 </section>
               </div>
@@ -553,6 +550,17 @@ export default function App() {
                             </div>
                           </div>
                         )}
+
+                        <div className="mt-6 pt-6 border-t border-[#F8F7F5] relative z-10">
+                          <button 
+                            onClick={() => handleGenerateMemberReport(member)}
+                            disabled={isGenerating}
+                            className="w-full py-3 bg-[#1A1714] text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 hover:bg-black transition-all active:scale-95 disabled:opacity-50"
+                          >
+                            <Sparkles size={14} className="text-orange-400" />
+                            개별 코칭 리포트 생성
+                          </button>
+                        </div>
                         
                         {/* Background subtle color hint */}
                         <div className={cn(
