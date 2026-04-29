@@ -272,7 +272,48 @@ export const InDepthReport: React.FC<InDepthReportProps> = ({
             </div>
 
             <div className="prose prose-orange max-w-none prose-h1:text-3xl prose-h1:font-black prose-h2:text-xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-p:text-[#5C5751] prose-li:text-[#5C5751] prose-strong:text-[#1A1714] prose-h2:text-[#E85D26] prose-h2:tracking-tight prose-h2:bg-orange-50 prose-h2:inline-block prose-h2:px-4 prose-h2:py-1 prose-h2:rounded-lg prose-p:leading-8 prose-li:leading-7 break-words whitespace-pre-wrap">
-              <ReactMarkdown>{aiReport}</ReactMarkdown>
+              <ReactMarkdown 
+                components={{
+                  h2: ({children}) => {
+                    const text = String(children);
+                    if (text.includes("버크만 인사이트")) {
+                      return (
+                        <div className="mt-12 mb-8 border-b-2 border-[#1A1714] pb-6">
+                           <div className="flex items-center justify-between mb-4">
+                              <h2 className="!m-0 !p-0 !bg-transparent !text-3xl !font-black !text-[#1A1714] border-none">버크만 인사이트</h2>
+                              <div className="w-10 h-10 bg-gradient-to-br from-red-500 via-green-500 to-blue-500 p-1 rounded-lg flex items-center justify-center transform rotate-45">
+                                <div className="w-full h-full bg-white rounded-sm flex items-center justify-center transform -rotate-45">
+                                  <div className="w-4 h-4 rounded-full bg-[#1A1714]/10" />
+                                </div>
+                              </div>
+                           </div>
+                           <p className="text-sm font-bold text-[#9C9590] uppercase tracking-wider">{data.name}</p>
+                           <h3 className="text-2xl font-black mt-8 text-[#1A1714]">강점</h3>
+                           <p className="text-sm text-[#5C5751] font-medium leading-relaxed mt-4 !bg-transparent !p-0">
+                             이제 당신을 특별하게 만들어 줄 강점에 대해 알아봅시다. 강점은 버크만 흥미 점수와 버크만 컴포넌트 점수를 바탕으로 생성되었습니다. 각 문장을 주의 깊게 읽고 당신에게 가장 중요한 문장을 표시하시기 바랍니다.
+                           </p>
+                        </div>
+                      );
+                    }
+                    return <h2 className="text-xl font-bold mt-12 mb-6 text-[#E85D26] tracking-tight bg-orange-50 inline-block px-4 py-1 rounded-lg">{children}</h2>;
+                  },
+                  li: ({children}) => {
+                    // Detect if we are inside the Birkman Insight strengths list
+                    // This is a bit of a heuristic but works for the structured prompt
+                    return (
+                      <div className="flex items-start gap-4 mb-2 group">
+                        <div className="mt-1 w-5 h-5 rounded-full border-2 border-[#E5E3DF] flex-shrink-0 group-hover:border-[#E85D26] transition-colors" />
+                        <div className="flex-1 bg-[#F1F1F1] px-6 py-3 rounded-md text-[15px] font-medium text-[#1A1714] leading-snug group-hover:bg-[#EAEAEA] transition-all">
+                          {children}
+                        </div>
+                      </div>
+                    );
+                  },
+                  ul: ({children}) => <div className="space-y-2 mt-4">{children}</div>
+                }}
+              >
+                {aiReport}
+              </ReactMarkdown>
             </div>
             
             <div className="mt-24 pt-10 border-t border-[#E5E3DF] flex flex-col md:flex-row items-center justify-between gap-6">

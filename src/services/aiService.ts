@@ -25,24 +25,24 @@ ${scoresText}
 
   const sections = [
     {
-      title: "## 1. 전문 분석 요약 (Executive Summary)",
-      prompt: "이 분의 지표를 관통하는 핵심 통찰을 한 문단으로 작성하세요."
+      title: "## 1. 버크만 인사이트: 나의 핵심 강점 (Birkman Insight: Strengths)",
+      prompt: "이 사용자의 높은 지표(Usual)와 선호도(Interests)를 바탕으로, 샘플 이미지에 있는 것과 유사한 스타일의 '강점 문장' 10가지를 작성하세요. 각 문장은 '-한다' 또는 '-이다'로 끝나야 하며, 한 문장씩 리스트 형태로 작성하세요. (예: '숫자를 가지고 일하거나, 숫자를 사용하고 처리하는 것이 포함된 업무를 즐긴다.')"
     },
     {
-      title: "## 2. 행동 강점 분석 (Usual Behavior)",
-      prompt: "사회적 환경에서 발휘되는 핵심 역량과 생산적인 행동 패턴을 구체적으로 분석하세요."
+      title: "## 2. 버크만 맵 심층 분석 (Birkman Map Deep Analysis)",
+      prompt: "버크만 맵의 4사분면(DOER, COMMUNICATOR, ANALYZER, THINKER) 위치를 바탕으로, Usual, Need, Stress 좌표의 의미를 통합적으로 설명하세요. 평소 행동과 내면의 욕구가 어떻게 조화를 이루거나 갈등을 빚는지 전문적으로 분석하세요."
     },
     {
-      title: "## 3. 욕구 및 동기 분석 (Needs & Environment)",
-      prompt: "어떤 환경에서 에너지를 얻고, 타인에게 기대하는 핵심 지원이 무엇인지 분석하세요."
+      title: "## 3. 행동 스타일 및 커뮤니케이션 (Behavioral Style)",
+      prompt: "9대 지표의 구체적인 점수를 언급하며, 타인과 협업할 때 나타나는 생산적인 스타일을 분석하세요."
     },
     {
-      title: "## 4. 스트레스 및 리스크 관리 (Stress Behavior)",
-      prompt: "간극(Gap)이 큰 지표를 중심으로 스트레스 행동을 설명하고 솔루션을 제안하세요."
+      title: "## 4. 스트레스 관리 및 환경 제언 (Stress & Solution)",
+      prompt: "욕구가 충족되지 않을 때의 구체적인 스트레스 행동과 이를 예방하기 위한 업무 환경 제언을 포함하세요."
     },
     {
-      title: "## 5. 실행 과제 (Action Plan)",
-      prompt: "Stop, Keep, Start 모델로 3가지 구체적인 실천 과제를 제안하고 격려의 메시지로 마무리하세요."
+      title: "## 5. 최종 실천 과제 (Action Plan)",
+      prompt: "Stop, Keep, Start 모델로 3가지 실천 과제를 제안하고 마지막에 코칭 메시지로 마무리하세요."
     }
   ];
 
@@ -53,9 +53,9 @@ ${scoresText}
       const sectionPrompt = `
 ${baseContext}
 ${fullReport ? "지금까지 작성된 내용:\n" + fullReport.slice(-500) + "\n\n이어서 작성할 섹션:" : ""}
-섹션 제목: ${section.title}
+반드시 다음 제목으로 섹션을 시작하십시오: ${section.title}
 상세 요청: ${section.prompt}
-서식: 마크다운, 키워드 **굵게**, 절대 중간에 끊기지 않도록 완결성 있게 작성.
+서식: 마크다운 형식을 사용하고, 주요 키워드는 **굵게** 표시하세요. 절대 중간에 끊기지 않도록 해당 섹션을 완결성 있게 작성하세요.
 `;
 
       const sectionContent = await callSingleAIStep(provider, apiKey, model, sectionPrompt);
