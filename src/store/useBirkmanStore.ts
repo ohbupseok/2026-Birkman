@@ -43,6 +43,8 @@ interface BirkmanState {
   removeResult: (timestamp: number) => void;
   clearAll: () => void;
   setIndividualReport: (memberId: string, report: string) => void;
+  darkMode: boolean;
+  setDarkMode: (dark: boolean) => void;
 }
 
 export const useBirkmanStore = create<BirkmanState>()(
@@ -60,6 +62,7 @@ export const useBirkmanStore = create<BirkmanState>()(
       },
       results: [],
       individualReports: {},
+      darkMode: false,
 
       loadSampleData: () => set({ 
         results: [EXAMPLE_TEAM_DATA[0]].map(member => ({
@@ -131,7 +134,9 @@ export const useBirkmanStore = create<BirkmanState>()(
 
       setIndividualReport: (memberId, report) => set((state) => ({
         individualReports: { ...state.individualReports, [memberId]: report }
-      }))
+      })),
+
+      setDarkMode: (darkMode) => set({ darkMode })
     }),
     {
       name: "birkman-storage",

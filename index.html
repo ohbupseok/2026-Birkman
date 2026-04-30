@@ -5,6 +5,21 @@
     <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>버크만 분석 (Birkman Analysis)</title>
+    <script>
+      (function() {
+        try {
+          const storage = localStorage.getItem('birkman-storage');
+          if (storage) {
+            const parsed = JSON.parse(storage);
+            if (parsed && parsed.state && parsed.state.darkMode) {
+              document.documentElement.classList.add('dark');
+            }
+          } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
