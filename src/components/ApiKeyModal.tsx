@@ -10,10 +10,12 @@ import { useBirkmanStore } from '../store/useBirkmanStore';
 import { cn } from '../lib/utils';
 
 export function ApiKeyModal() {
-  const { aiConfig, setAIConfig } = useBirkmanStore();
-  const [key, setKey] = useState('');
+  const { aiConfig, setAIConfig, showApiKeyModal, setShowApiKeyModal } = useBirkmanStore();
+  const [key, setKey] = useState(aiConfig.apiKey || '');
   const [error, setError] = useState(false);
-  const [isVisible, setIsVisible] = useState(!aiConfig.apiKey);
+
+  // Auto-show if no key exists
+  const isVisible = showApiKeyModal || !aiConfig.apiKey;
 
   const handleSave = () => {
     if (!key || key.length < 20) {
@@ -27,7 +29,7 @@ export function ApiKeyModal() {
       provider: 'gemini',
       model: 'gemini-2.0-flash'
     });
-    setIsVisible(false);
+    setShowApiKeyModal(false);
   };
 
   if (!isVisible) return null;
@@ -38,6 +40,7 @@ export function ApiKeyModal() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="absolute inset-0 bg-[#0F0E0D]/80 backdrop-blur-md"
+        onClick={() => aiConfig.apiKey && setShowApiKeyModal(false)}
       />
       
       <motion.div 
@@ -45,6 +48,14 @@ export function ApiKeyModal() {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className="relative w-full max-w-lg bg-white dark:bg-[#1A1714] rounded-[32px] overflow-hidden shadow-2xl border border-[#E5E3DF] dark:border-[#2A2724]"
       >
+        {aiConfig.apiKey && (
+          <button 
+            onClick={() => setShowApiKeyModal(false)}
+            className="absolute right-6 top-6 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 text-[#9C9590] transition-colors"
+          >
+            <ChevronRight className="rotate-90" size={20} />
+          </button>
+        )}
         <div className="p-8 space-y-8">
           <div className="space-y-4">
             <div className="flex items-center gap-4">

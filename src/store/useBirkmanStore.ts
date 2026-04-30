@@ -45,6 +45,8 @@ interface BirkmanState {
   setIndividualReport: (memberId: string, report: string) => void;
   darkMode: boolean;
   setDarkMode: (dark: boolean) => void;
+  showApiKeyModal: boolean;
+  setShowApiKeyModal: (show: boolean) => void;
 }
 
 export const useBirkmanStore = create<BirkmanState>()(
@@ -136,7 +138,10 @@ export const useBirkmanStore = create<BirkmanState>()(
         individualReports: { ...state.individualReports, [memberId]: report }
       })),
 
-      setDarkMode: (darkMode) => set({ darkMode })
+      setDarkMode: (darkMode) => set({ darkMode }),
+
+      showApiKeyModal: false,
+      setShowApiKeyModal: (showApiKeyModal) => set({ showApiKeyModal })
     }),
     {
       name: "birkman-storage",

@@ -59,7 +59,9 @@ export default function App() {
     individualReports,
     setIndividualReport,
     darkMode,
-    setDarkMode
+    setDarkMode,
+    showApiKeyModal,
+    setShowApiKeyModal
   } = useBirkmanStore();
 
   const [activeTab, setActiveTab] = useState<'members' | 'signature'>('members');
@@ -143,8 +145,9 @@ export default function App() {
     } catch (err: any) {
       console.error("Report Generation Failed:", err);
       let msg = err.message;
-      if (msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('apikey') || msg.toLowerCase().includes('unauthorized')) {
+      if (msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('apikey') || msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('401')) {
         msg = "API 키가 올바르지 않거나 권한이 없습니다. 설정을 다시 확인해 주세요.";
+        setShowApiKeyModal(true);
       }
       setError(`${member.name} 멤버의 리포트 생성 중 오류가 발생했습니다: ${msg}`);
     } finally {
@@ -300,13 +303,14 @@ export default function App() {
               {darkMode ? <Sun size={24} /> : <Moon size={24} />}
             </button>
             <button 
-              onClick={() => setShowSettings(!showSettings)}
+              onClick={() => setShowApiKeyModal(true)}
               className={cn(
                 "p-2 rounded-xl border transition-all flex items-center gap-2 text-xs font-bold",
                 aiConfig.apiKey 
                   ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900/50 text-green-700 dark:text-green-400" 
-                  : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400"
+                  : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 shadow-lg shadow-red-500/10 animate-pulse"
               )}
+              title="AI API 설정"
             >
               <Settings size={16} />
               {aiConfig.apiKey ? `${aiConfig.provider.toUpperCase()} Active` : "API Key Required"}
