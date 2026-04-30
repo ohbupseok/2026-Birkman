@@ -40,6 +40,7 @@ import { InDepthReport } from './components/InDepthReport';
 import { BirkmanColorGuide } from './components/BirkmanColorGuide';
 import { BirkmanOrgOrientation } from './components/BirkmanOrgOrientation';
 import { OH_BEOM_SEOK_DATA } from './data/sampleReport';
+import { ApiKeyModal } from './components/ApiKeyModal';
 
 export default function App() {
   const { 
@@ -148,7 +149,11 @@ export default function App() {
       setIndividualReport(member.id, res);
     } catch (err: any) {
       console.error("Report Generation Failed:", err);
-      setError(`${member.name} 멤버의 리포트 생성 중 오류가 발생했습니다: ${err.message}`);
+      let msg = err.message;
+      if (msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('apikey') || msg.toLowerCase().includes('unauthorized')) {
+        msg = "API 키가 올바르지 않거나 권한이 없습니다. 설정을 다시 확인해 주세요.";
+      }
+      setError(`${member.name} 멤버의 리포트 생성 중 오류가 발생했습니다: ${msg}`);
     } finally {
       setIsGenerating(false);
     }
@@ -178,6 +183,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#FDFCFB] dark:bg-[#0F0E0D] text-[#1A1714] dark:text-[#E5E3DF] font-sans transition-colors duration-300">
+      <ApiKeyModal />
       {/* Help Modal */}
       <AnimatePresence>
         {showHelp && (
