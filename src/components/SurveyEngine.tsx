@@ -41,9 +41,9 @@ export const SurveyEngine: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl bg-white rounded-[40px] border border-[#E5E3DF] shadow-2xl overflow-hidden">
+    <div className="w-full max-w-2xl bg-white dark:bg-[#1A1714] rounded-[40px] border border-[#E5E3DF] dark:border-[#2A2724] shadow-2xl overflow-hidden">
       {/* Header */}
-      <div className="bg-[#1A1714] text-white p-8 flex items-center justify-between">
+      <div className="bg-[#1A1714] dark:bg-[#0F0E0D] text-white p-8 flex items-center justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <ClipboardCheck size={20} className="text-[#E85D26]" />
@@ -70,7 +70,7 @@ export const SurveyEngine: React.FC = () => {
             <span className="text-[10px] font-black text-[#9C9590] uppercase tracking-[0.2em]">Question {currentStep + 1} of 250</span>
             <span className="text-sm font-black text-[#E85D26]">{progress}%</span>
           </div>
-          <div className="h-2 bg-[#F8F7F5] rounded-full overflow-hidden border border-[#E5E3DF]/30">
+          <div className="h-2 bg-[#F8F7F5] dark:bg-[#2A2724] rounded-full overflow-hidden border border-[#E5E3DF]/30 dark:border-[#3A3734]/30">
             <motion.div 
               className="h-full bg-[#E85D26]" 
               initial={{ width: 0 }}
@@ -92,12 +92,14 @@ export const SurveyEngine: React.FC = () => {
             <div className="flex justify-center">
               <span className={cn(
                 "px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm",
-                isNeeds ? "bg-blue-50 text-blue-600 border border-blue-100" : "bg-orange-50 text-[#E85D26] border border-orange-100"
+                isNeeds 
+                  ? "bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50" 
+                  : "bg-orange-50 dark:bg-orange-950/20 text-[#E85D26] border border-orange-100 dark:border-orange-900/50"
               )}>
                 {isNeeds ? "Internal Needs (내면의 욕구)" : "Usual Behavior (평소 행동)"}
               </span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-black text-[#1A1714] leading-[1.3] tracking-tighter">
+            <h2 className="text-2xl md:text-3xl font-black text-[#1A1714] dark:text-white leading-[1.3] tracking-tighter">
               {currentQ[2]}
             </h2>
           </motion.div>
@@ -121,20 +123,20 @@ export const SurveyEngine: React.FC = () => {
                 className={cn(
                   "w-full group p-5 rounded-2xl border-2 text-left transition-all flex items-center justify-between",
                   isSelected 
-                    ? "border-[#E85D26] bg-[#FFF8F5] shadow-lg shadow-orange-500/5 translate-x-2" 
-                    : "border-[#F0EFED] hover:border-[#E85D26]/30 hover:bg-[#FDFCFB]"
+                    ? "border-[#E85D26] bg-[#FFF8F5] dark:bg-orange-500/10 shadow-lg shadow-orange-500/5 translate-x-2" 
+                    : "border-[#F0EFED] dark:border-[#2A2724] hover:border-[#E85D26]/30 dark:hover:border-[#E85D26]/30 hover:bg-[#FDFCFB] dark:hover:bg-[#201D1A]"
                 )}
               >
                 <div className="flex items-center gap-4">
                   <div className={cn(
                     "w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs transition-all",
-                    isSelected ? "bg-[#E85D26] text-white" : "bg-[#F8F7F5] text-[#9C9590] group-hover:bg-[#E85D26]/10 group-hover:text-[#E85D26]"
+                    isSelected ? "bg-[#E85D26] text-white" : "bg-[#F8F7F5] dark:bg-[#2A2724] text-[#9C9590] group-hover:bg-[#E85D26]/10 group-hover:text-[#E85D26]"
                   )}>
                     {val}
                   </div>
                   <span className={cn(
                     "font-bold transition-all",
-                    isSelected ? "text-[#E85D26] italic" : "text-[#5C5751] group-hover:text-[#1A1714]"
+                    isSelected ? "text-[#E85D26] italic" : "text-[#5C5751] dark:text-[#9C9590] group-hover:text-[#1A1714] dark:group-hover:text-white"
                   )}>
                     {labels[val-1]}
                   </span>
@@ -149,11 +151,11 @@ export const SurveyEngine: React.FC = () => {
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between pt-6 border-t border-[#F0EFED]">
+        <div className="flex items-center justify-between pt-6 border-t border-[#F0EFED] dark:border-[#2A2724]">
           <button 
             onClick={prevStep}
             disabled={currentStep === 0}
-            className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[#9C9590] hover:text-[#1A1714] disabled:opacity-30 transition-all"
+            className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[#9C9590] hover:text-[#1A1714] dark:hover:text-white disabled:opacity-30 transition-all"
           >
             <ArrowLeft size={16} /> 이전 문항
           </button>
